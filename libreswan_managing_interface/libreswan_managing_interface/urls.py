@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^vpn/', include('vpn.urls')),
+    # VPN interface is the default interface
+    url(r'^$', include('vpn.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^$', admin.site.urls),
 ]
