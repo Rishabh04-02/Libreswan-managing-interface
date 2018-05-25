@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon"  href="{% static 'vpn/img/favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'vpn/css/style.css' %}" />
+    <title>libreswan Managing Interface</title>
+</head>
+<body>
+<img src="{% static 'vpn/img/libreswan-logo.png' %}" />
+<h1>libreswan Managing Interface</h1>
+<br><a href="/admin">Login here</a>
+<br><br>Sample DNS configuration:
+<pre style="text-align:left;">
+conn snt
+	left=10.11.11.1
+	leftsubnet=10.0.1.0/24
+	leftnexthop=172.16.55.66
+	leftsourceip=10.0.1.1
+	right=192.168.22.1
+	rightsubnet=10.0.2.0/24
+	rightnexthop=172.16.88.99
+	rightsourceip=10.0.2.1
+	keyingtries=%forever
+
+</pre>
+</body>
+</html>
