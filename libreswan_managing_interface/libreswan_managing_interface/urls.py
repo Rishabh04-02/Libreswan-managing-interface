@@ -18,6 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     # VPN interface is the default interface
-    url(r'^$', include('vpn.urls')),
+    url(r'^', include('vpn.urls')),
     url(r'^admin/', admin.site.urls),
 ]
