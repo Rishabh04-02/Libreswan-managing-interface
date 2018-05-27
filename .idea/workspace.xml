@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="295911f0-978e-4019-87b9-74f1414e2abd" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/css/style.css" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/fonts/LICENSE.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/fonts/README.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/fonts/Roboto-Bold-webfont.woff" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/fonts/Roboto-Light-webfont.woff" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/fonts/Roboto-Regular-webfont.woff" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/img/favicon.png" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/static/vpn/img/libreswan-logo.png" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/libreswan_managing_interface/vpn/migrations/0004_auto_20180527_2031.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/libreswan_managing_interface/libreswan_managing_interface/urls.py" afterPath="$PROJECT_DIR$/libreswan_managing_interface/libreswan_managing_interface/urls.py" />
+      <change beforePath="$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py" afterPath="$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py" />
       <change beforePath="$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py" afterPath="$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,12 +24,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="9" column="64" lean-forward="false" selection-start-line="9" selection-start-column="64" selection-end-line="9" selection-end-column="64" />
+            <state relative-caret-position="288">
+              <caret line="18" column="17" lean-forward="false" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="17" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="396">
+              <caret line="22" column="24" lean-forward="false" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+              <folding>
+                <element signature="e#24#63#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -90,17 +92,17 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/libreswan_managing_interface/libreswan_managing_interface/settings.py" />
-        <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py" />
         <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/views.py" />
         <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/templates/vpn/index.html" />
         <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/static/vpn/css/style.css" />
         <option value="$PROJECT_DIR$/libreswan_managing_interface/libreswan_managing_interface/urls.py" />
-        <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py" />
         <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/urls.py" />
+        <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py" />
+        <option value="$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="27" />
     <option name="width" value="1366" />
     <option name="height" value="741" />
@@ -160,51 +162,6 @@
               <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
               <item name="libreswan" type="462c0819:PsiDirectoryNode" />
               <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="css" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="libreswan" type="b2602c69:ProjectViewProjectNode" />
-              <item name="libreswan" type="462c0819:PsiDirectoryNode" />
-              <item name="libreswan_managing_interface" type="462c0819:PsiDirectoryNode" />
-              <item name="vpn" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="vpn" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -247,7 +204,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="27" width="1366" height="741" extended-state="7" />
+    <frame x="0" y="27" width="1366" height="741" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21229868" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -354,13 +311,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="29" lean-forward="false" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/templates/vpn/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
@@ -409,9 +359,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="9" column="64" lean-forward="false" selection-start-line="9" selection-start-column="64" selection-end-line="9" selection-end-column="64" />
+        <state relative-caret-position="288">
+          <caret line="18" column="17" lean-forward="false" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="17" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libreswan_managing_interface/vpn/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="22" column="24" lean-forward="false" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

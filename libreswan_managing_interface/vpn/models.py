@@ -16,7 +16,7 @@ class dnsconfig(models.Model):
     right_subnet_text = models.CharField(max_length=19, default='')
     right_next_hop = models.CharField(max_length=16,default='')
     right_source_ip = models.CharField(max_length=16,default='')
-    creation_date = models.DateTimeField('date created')
+    keyring_tries = models.CharField(max_length=16,default='%forever')
 
     def __str__(self):
         return self.connection_name
