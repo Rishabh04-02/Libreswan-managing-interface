@@ -35,8 +35,10 @@ The static files will be placed in a directory called static within the project 
 Testing the project by starting up the Django development server with this command:
 
 ```
-./manage.py runserver 127.0.0.1:8000
+sudo ./manage.py runserver 127.0.0.1:8000
 ```
+Note - Use ``sudo`` before running server as it needs to write ``ipsec.conf``  file located at ``/etc/ipsec.conf`` and this file can't be written without using ``sudo``.
+
 In the web browser, visit the server's domain name or IP address followed by ``:8000``:
 ```
 http://server_domain_or_IP:8000
