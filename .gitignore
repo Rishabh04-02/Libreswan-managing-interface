@@ -1,5 +1,5 @@
 #custom ignored files
-libreswan_managing_interface/database.cnf
+libreswan_managing_interface/libreswan_managing_interface/database.cnf
 .idea/workspace.xml
 
 # Created by https://www.gitignore.io

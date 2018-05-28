@@ -1,5 +1,0 @@
-[client]
-database = libreswan
-user = root
-password = hey
-default-character-set = utf8
