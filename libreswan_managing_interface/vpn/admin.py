@@ -28,23 +28,21 @@ class dnsconfigForm(forms.model):
 
 def write_to_file(modeladmin,request,queryset):
     for qs in queryset:
-        file = "/home/rishabh/Desktop/try.txt"    #writing data to ipsec.conf file
+        list_values = ['keyexchange','connaddrfamily','type','left','leftsubnet','leftsubnets','leftvti','leftaddresspool','leftprotoport','leftnexthop','leftsourceip','leftupdown','right','rightsubnet','rightaddresspool','rightnexthop','rightsourceip','keyringtries']
+        lastval = len(list_values)
+        file = "/etc/ipsec.conf"  # writing data to ipsec.conf file
         f = open(file, 'a')  # Opening file in append mode
-        f.write("conn\t"+qs.connection_name + "\n")
-        f.write("\t\tleft="+qs.left_text + "\n")
-        f.write("\t\tleftsubnet="+qs.left_subnet_text + "\n")
-        f.write("\t\tleftnexthop="+qs.left_next_hop + "\n")
-        f.write("\t\tleftsourceip="+qs.left_source_ip + "\n")
-        f.write("\t\tright="+qs.right_text + "\n")
-        f.write("\t\trightsubnet="+qs.right_subnet_text + "\n")
-        f.write("\t\trightnexthop="+qs.right_next_hop + "\n")
-        f.write("\t\trightsourceip="+qs.right_source_ip + "\n")
-        f.write("\t\tkeyringtries="+qs.keyring_tries + "\n")
+        f.write("conn\t" + qs.connection_name + "\n")
+        for i in range(0,lastval):
+            current = list_values[i]
+            getattr(qs, current)
+            if(getattr(qs, current)!=''):
+                f.write("\t\t" +current+ "=" +getattr(qs, current)+ "\n")
         f.close()
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['connection_name','right_text']
+    list_display = ['connection_name','creation_date']
     actions = [write_to_file]
 
 admin.site.register(dnsconfig,TaskAdmin)
