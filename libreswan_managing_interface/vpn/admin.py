@@ -9,28 +9,14 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django import forms
 
-from .models import dnsconfig
-"""
-#for data validation
-class dnsconfigForm(forms.model):
+from .models import subnettosubnet,Vpnforremotehost
 
-    class Meta:
-        model=dnsconfig
-
-    def clean_right_text(self):
-        data=self.cleaned_data['right_text']
-        #Check if right_text == %any
-        if data=='%any':
-            raise ValidationError(_('Right text can not be %any'))
-
-        return data
-"""
 
 def write_to_file(modeladmin,request,queryset):
     for qs in queryset:
-        list_values = ['keyexchange','connaddrfamily','type','left','leftsubnet','leftsubnets','leftvti','leftaddresspool','leftprotoport','leftnexthop','leftsourceip','leftupdown','right','rightsubnet','rightaddresspool','rightnexthop','rightsourceip','keyringtries']
+        list_values = ['also','connaddrfamily','left','leftsubnet','right','rightsubnet','keyringtries','auto']
         lastval = len(list_values)
-        file = "/etc/ipsec.conf"  # writing data to ipsec.conf file
+        file = "/home/rishabh/try.txt"  # writing data to ipsec.conf file
         f = open(file, 'a')  # Opening file in append mode
         f.write("conn\t" + qs.connection_name + "\n")
         for i in range(0,lastval):
@@ -45,4 +31,5 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ['connection_name','creation_date']
     actions = [write_to_file]
 
-admin.site.register(dnsconfig,TaskAdmin)
+admin.site.register(subnettosubnet,TaskAdmin)
+admin.site.register(Vpnforremotehost,TaskAdmin)

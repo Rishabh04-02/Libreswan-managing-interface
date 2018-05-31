@@ -5,8 +5,24 @@ from django.db import models
 
 # Create your models here.
 
-#Model for checking when are the values stored in ipsec.conf
-class dnsconfig(models.Model):
+#Subnet to Subnet Model for storing values to ipsec.conf
+class subnettosubnet(models.Model):
+    connection_name = models.CharField(max_length = 20,default='',help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
+    also = models.CharField(max_length=20, default='',blank=True, help_text="The value is a section <b><a>name</a></b>")
+    connaddrfamily = models.CharField(max_length=4, default='ipv4',blank=True,help_text="Valid/accepted values are <b><a>ipv4</a></b> OR <b><a>ipv6</a></b>")
+    left = models.CharField(max_length = 16,default='',blank=True,help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>")
+    leftsubnet = models.CharField(max_length=16, default='',blank=True,help_text="eg. vhost:%no,%priv")
+    right = models.CharField(max_length=16,default='',blank=True,help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>")
+    rightsubnet = models.CharField(max_length=19, default='',blank=True,help_text="Valid - <b><a>Input IP</a></b> OR <b><a>leave blank</a></b>")
+    keyringtries = models.CharField(max_length=16,default='%forever',blank=True,help_text="eg. <b><a>%forever</a></b>")
+    auto = models.CharField(max_length=16, default='',blank=True, help_text="eg. <b><a>start</a></b>")
+    creation_date = models.DateTimeField('date created')
+
+    def __str__(self):
+        return self.connection_name
+
+#Subnet to Subnet Model for storing values to ipsec.conf
+class Vpnforremotehost(models.Model):
     connection_name = models.CharField(max_length = 20,default='',blank=True,help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     keyexchange = models.CharField(max_length=3, default='ike',help_text="The default and currently the only accepted value is <b><a>ike</a></b>")
     connaddrfamily = models.CharField(max_length=4, default='ipv4',help_text="Valid/accepted values are <b><a>ipv4</a></b> OR <b><a>ipv6</a></b>")
