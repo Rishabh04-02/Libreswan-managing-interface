@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import subprocess
+import os
+
+import string
+import random
+
 from django.contrib import admin
 from django.contrib.auth.models import User
 
 """
+    OS imported to check and create dir
+    subprocess imported to run commands through subprocess
+    
+    String imported to generate string
+    random imported to generate random string
+    
     Admin imported to access user submitted info for VPN models
     User imported to add generate certificate options to admin activity
 """
@@ -43,7 +55,63 @@ class TaskAdmin(admin.ModelAdmin):
 
 #Generate user certificate
 def generate_user_certificate(self, request, queryset):
-    print('Generating certificate')
+    #For each qs in queryset generate the certificates.     Do this
+    tempdirname = 'temp_cert/'
+    dirname = 'certs/'
+
+    if(os.path.isdir("temp_cert/")!=True): #check if temporary certs dir exists
+        cmd = ['mkdir', tempdirname]
+        p = subprocess.Popen(
+            cmd,
+            shell=False
+        )
+        out, err = p.communicate('\n')
+
+    if (os.path.isdir("certs/") != True):  # check if certs dir exists
+        cmd = ['mkdir', dirname]
+        q = subprocess.Popen(
+            cmd,
+            shell=False
+        )
+        out, err = q.communicate('\n')
+
+    #Generating temporary/intermediate certificates
+
+    #Generating random name for certificate and key
+    keyname = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.pem'
+    print('private key - '+keyname)
+    certname = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10)) +'.pem'
+    print('certificate name - '+certname)
+
+    expiration_period = '500'
+    cmd = ['openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout', tempdirname+keyname, '-x509', '-days', expiration_period, '-out', tempdirname+certname]
+    r = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        shell=False
+    )
+    #writing the values to PIPE
+    r.stdin.write("CA\n")
+    r.stdin.write("Ontario\n")
+    r.stdin.write("Ottawa\n")
+    r.stdin.write("No Hats Corporation\n")
+    r.stdin.write("Clients\n")
+    r.stdin.write("username.nohats.ca\n")
+    r.stdin.write("info@izonetelecom.com\n")
+    #getting the output/errors
+    out, err = r.communicate('\n')
+    r.stdin.close()
+
+    #Generating the .p12 certificate
+    cmd = ['openssl', 'pkcs12', '-inkey', tempdirname+keyname, '-in', tempdirname+certname, '-export', '-out', 'temp_cert/username.p12', '-password', 'pass:password']
+    s = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        shell=False
+    )
+    # writing the values to PIPE
+    out, err = s.communicate('\n')
+
 
 
 class UserAdmin(admin.ModelAdmin):
