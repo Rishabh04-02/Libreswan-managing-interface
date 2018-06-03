@@ -53,13 +53,13 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ['connection_name','creation_date']
     actions = [write_to_file]
 
-#Generate user certificate
-def generate_user_certificate(self, request, queryset):
-    #For each qs in queryset generate the certificates.     Do this
-    tempdirname = 'temp_cert/'
-    dirname = 'certs/'
+#Defining global variables
+tempdirname = 'temp_cert/'  #temporary directory name
+dirname = 'certs/'          #Certificates directory name
 
-    if(os.path.isdir("temp_cert/")!=True): #check if temporary certs dir exists
+#check if folder exists/create folder
+def check_folders():
+    if (os.path.isdir("temp_cert/") != True):  # check if temporary certs dir exists
         cmd = ['mkdir', tempdirname]
         p = subprocess.Popen(
             cmd,
@@ -75,22 +75,22 @@ def generate_user_certificate(self, request, queryset):
         )
         out, err = q.communicate('\n')
 
-    #Generating temporary/intermediate certificates
+#generate random name for cert and keys
+def random_name(ntype):
+    gen_name = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10)) + ntype
+    return gen_name
 
-    #Generating random name for certificate and key
-    keyname = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10)) + '.pem'
-    print('private key - '+keyname)
-    certname = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10)) +'.pem'
-    print('certificate name - '+certname)
-
+#generating temporary rsa key pair/certificates
+def gen_temp_keys(keyname,certname):
     expiration_period = '500'
-    cmd = ['openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout', tempdirname+keyname, '-x509', '-days', expiration_period, '-out', tempdirname+certname]
+    cmd = ['openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout', tempdirname + keyname, '-x509', '-days',
+           expiration_period, '-out', tempdirname + certname]
     r = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE,
         shell=False
     )
-    #writing the values to PIPE
+    # writing the values to PIPE
     r.stdin.write("CA\n")
     r.stdin.write("Ontario\n")
     r.stdin.write("Ottawa\n")
@@ -98,29 +98,64 @@ def generate_user_certificate(self, request, queryset):
     r.stdin.write("Clients\n")
     r.stdin.write("username.nohats.ca\n")
     r.stdin.write("info@izonetelecom.com\n")
-    #getting the output/errors
+    # getting the output/errors
     out, err = r.communicate('\n')
     r.stdin.close()
 
-    #Generating the .p12 certificate
-    cmd = ['openssl', 'pkcs12', '-inkey', tempdirname+keyname, '-in', tempdirname+certname, '-export', '-out', 'temp_cert/username.p12', '-password', 'pass:password']
+#Generate .p12 certificates
+def gen_p12_cert(keyname,certname,password,username):
+    cmd = ['openssl', 'pkcs12', '-inkey', tempdirname + keyname, '-in', tempdirname + certname, '-export', '-out',
+           dirname + username + '.p12', '-password', 'pass:'+password]
     s = subprocess.Popen(
         cmd,
-        stdin=subprocess.PIPE,
         shell=False
     )
-    # writing the values to PIPE
     out, err = s.communicate('\n')
 
+#delete temporary certificates
+def dlt_temp_cert(filename):
+    cmd = ['rm', '-rf', tempdirname+filename]
+    s = subprocess.Popen(
+        cmd,
+        shell=False
+    )
+    out, err = s.communicate('\n')
+
+
+"""
+   Generate user certificate -
+   Steps for generating temporary/intermediate certificates in steps
+   Step 1 - Generate random names for certs(public and private)
+   Step 2 - Generate private and public keys
+   Step 3 - Create .p12 file using the above keys
+   Step 4 - Delete the certificates generated in Step 2.
+   Step 5 - Save the information to database.
+"""
+def generate_user_certificate(self, request, queryset):
+    check_folders();
+    #For each qs in queryset generate the certificates.
+    for qs in queryset:
+        username = qs.username      #Taking input username, it'll the name of the final generated certificate
+
+        #Get random name for certificate and key
+        keyname = random_name('.pem');
+        certname = random_name('.pem');
+
+        #Generate certificates - Step 2
+        gen_temp_keys(keyname,certname);
+
+        #Generating the .p12 certificate - Step 3
+        password = random_name('');
+        gen_p12_cert(keyname, certname,password,username);
+
+        #Delete the temporary certificates
+        dlt_temp_cert(keyname);
+        dlt_temp_cert(certname);
 
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email', 'last_login', 'date_joined']   #email address verified field will be added here
     actions = [generate_user_certificate]
-
-
-
-
 
 
 """

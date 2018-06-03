@@ -1,8 +1,8 @@
 #custom ignored files
 libreswan_managing_interface/libreswan_managing_interface/database.cnf
 .idea/workspace.xml
-temp_cert/*
-certs/*
+libreswan_managing_interface/temp_cert/*
+libreswan_managing_interface/certs/*
 
 # Created by https://www.gitignore.io
 
