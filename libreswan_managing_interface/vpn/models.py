@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import string
+import random
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -46,3 +48,18 @@ class Vpnforremotehost(models.Model):
 
     def __str__(self):
         return self.connection_name
+
+#experimental model
+class UserDetails(models.Model):
+    def gen_token():
+        gen_name = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(20))
+        return gen_name
+
+    user_token = gen_token();
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=20, default=user_token)
+    email_verified = models.CharField(max_length=5, default=False)
+    cert_password = models.CharField(max_length=20, default='', blank=True)
+
+    def __str__(self):
+        return self.user.username

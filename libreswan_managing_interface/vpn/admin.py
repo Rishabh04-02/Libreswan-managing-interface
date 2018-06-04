@@ -9,6 +9,8 @@ import random
 
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from vpn.models import UserDetails
 
 """
     OS imported to check and create dir
@@ -152,15 +154,35 @@ def generate_user_certificate(self, request, queryset):
         dlt_temp_cert(keyname);
         dlt_temp_cert(certname);
 
+        #Save the info to database
+        # name of final cert(no need maybe)
+        # password of the certificate (user can view after login)
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email', 'last_login', 'date_joined']   #email address verified field will be added here
+
+
+# Define an inline admin descriptor for UserDetail model
+class UserDetailInline(admin.StackedInline):
+    model = UserDetails
+    can_delete = False
+    verbose_name_plural = 'User Details'
+
+# Define a new User admin
+"""class UserAdmin(admin.ModelAdmin):
+    list_display = ['username', 'email', 'last_login', 'date_joined']
     actions = [generate_user_certificate]
+"""
+
+class UserAdmin(BaseUserAdmin):
+    list_display = ['username', 'email', 'last_login']
+    actions = [generate_user_certificate]
+    inlines = (UserDetailInline, )
+
 
 
 """
     Displaying the models to admin
 """
+admin.site.site_header = 'Libreswan Administration'
 #For users
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
