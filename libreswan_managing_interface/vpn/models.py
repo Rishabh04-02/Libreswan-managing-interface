@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-#Subnet to Subnet Model for storing values to ipsec.conf
+# Subnet to Subnet Model for storing values to ipsec.conf
 class subnettosubnet(models.Model):
     connection_name = models.CharField(max_length = 20,default='',help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     also = models.CharField(max_length=20, default='',blank=True, help_text="The value is a section <b><a>name</a></b>")
@@ -23,7 +23,7 @@ class subnettosubnet(models.Model):
     def __str__(self):
         return self.connection_name
 
-#Subnet to Subnet Model for storing values to ipsec.conf
+# Subnet to Subnet Model for storing values to ipsec.conf
 class Vpnforremotehost(models.Model):
     connection_name = models.CharField(max_length = 20,default='',blank=True,help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     left = models.CharField(max_length = 16,default='',blank=True,help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>")
@@ -49,17 +49,17 @@ class Vpnforremotehost(models.Model):
     def __str__(self):
         return self.connection_name
 
-#experimental model
-class UserDetails(models.Model):
+# Model for certificate generation, will be used to update token/cert_password values
+class GenerateCertificate(models.Model):
     def gen_token():
         gen_name = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(20))
         return gen_name
 
     user_token = gen_token();
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    token = models.CharField(max_length=20, default=user_token)
-    email_verified = models.CharField(max_length=5, default=False)
-    cert_password = models.CharField(max_length=20, default='', blank=True)
+    username = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=20, default=user_token, help_text="<b><a>System Generated - Do not alter</a></b>")
+    email_verified = models.CharField(max_length=5, default=False, help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
+    cert_password = models.CharField(max_length=20, default='', blank=True, help_text="<b><a>System Generated - Do not alter</a></b>")
 
-    def __str__(self):
-        return self.user.username
+    def __unicode__(self):
+        return unicode(self.username)
