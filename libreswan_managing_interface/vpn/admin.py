@@ -53,7 +53,7 @@ tempdirname = 'temp_cert/'  # Temporary directory name
 dirname = 'certs/'          # Certificates directory name
 
 # Check if folder exists/create folder
-def check_folders():
+def check_folders(request):
     if (os.path.isdir("temp_cert/") != True):  # check if temporary certs dir exists
         cmd = ['mkdir', tempdirname]
         p = subprocess.Popen(
@@ -62,6 +62,9 @@ def check_folders():
         )
         out, err = p.communicate('\n')
 
+        # Success message on folder creation
+        messages.success(request, "Directory for saving temporary certificates: " + tempdirname + " created successfully.")
+
     if (os.path.isdir("certs/") != True):  # check if certs dir exists
         cmd = ['mkdir', dirname]
         q = subprocess.Popen(
@@ -69,6 +72,9 @@ def check_folders():
             shell=False
         )
         out, err = q.communicate('\n')
+
+        # Success message on folder creation
+        messages.success(request,"Directory for saving .p12 certificates: " + dirname + " created successfully.")
 
 # Generate random name for cert and keys
 def random_name(ntype):
@@ -126,7 +132,7 @@ def dlt_temp_cert(filename):
    Step 5 - Save the information to database.
 """
 def generate_user_certificate(self, request, queryset):
-    check_folders();
+    check_folders(request);
     UsersList = [];
     # For each qs in queryset generate the certificates.
     for qs in queryset:
@@ -153,9 +159,9 @@ def generate_user_certificate(self, request, queryset):
         # Adding user to the userslist
         UsersList.append(username)
 
-    #Displaying success message for certificate generation
+    # Displaying success message for certificate generation
     allusers = ', '.join(UsersList)
-    messages.success(request, "Certificate for users: " + allusers + " Generated successfully.")
+    messages.success(request, "Certificate for users: " + allusers + " generated successfully.")
 
 
 # Disable user function
