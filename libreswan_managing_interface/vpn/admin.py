@@ -7,6 +7,7 @@ import random
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib import messages
 
 # For accessing the set Input,generating the certificates
 from django.core.exceptions import ValidationError
@@ -149,6 +150,31 @@ def generate_user_certificate(self, request, queryset):
         GenerateCertificate.objects.filter(username__username=username).update(cert_password=password)
 
 
+# Disable user function
+def DisableUser(self,request,queryset):
+    UsersList = [];
+    for qs in queryset:
+        user = qs.username
+        active = qs.is_active
+        User.objects.filter(username=user).update(is_active = False)
+        UsersList.append(user)
+
+    allusers = ', '.join(UsersList)
+    messages.success(request, "The users " + allusers + " Disabled successfully")
+
+
+# Enable user function
+def EnableUser(self,request,queryset):
+    UsersList = [];
+    for qs in queryset:
+        user = qs.username
+        active = qs.is_active
+        User.objects.filter(username=user).update(is_active = True)
+        UsersList.append(user)
+
+    allusers = ', '.join(UsersList)
+    messages.success(request, "The users " + allusers + " Enabled successfully")
+
 
 # Define an inline admin descriptor for UserDetail model
 class UserDetailInline(admin.StackedInline):
@@ -158,8 +184,8 @@ class UserDetailInline(admin.StackedInline):
 
 # Define a new User admin
 class UserAuthAdmin(BaseUserAdmin):
-    list_display = ['username', 'email', 'last_login', 'date_joined']
-    actions = [generate_user_certificate]
+    list_display = ['username', 'email', 'is_active', 'last_login', 'date_joined']
+    actions = [generate_user_certificate, EnableUser, DisableUser]
     inlines = (UserDetailInline,)
 
 # UserAdmin Class for new model
