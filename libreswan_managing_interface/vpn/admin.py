@@ -127,6 +127,7 @@ def dlt_temp_cert(filename):
 """
 def generate_user_certificate(self, request, queryset):
     check_folders();
+    UsersList = [];
     # For each qs in queryset generate the certificates.
     for qs in queryset:
         username = unicode(qs.username)      # Taking input username, it'll the name of the final generated certificate
@@ -149,6 +150,13 @@ def generate_user_certificate(self, request, queryset):
         # Save/Update the password of certificate to database - Step 5
         GenerateCertificate.objects.filter(username__username=username).update(cert_password=password)
 
+        # Adding user to the userslist
+        UsersList.append(username)
+
+    #Displaying success message for certificate generation
+    allusers = ', '.join(UsersList)
+    messages.success(request, "Certificate for users: " + allusers + " Generated successfully.")
+
 
 # Disable user function
 def DisableUser(self,request,queryset):
@@ -159,8 +167,9 @@ def DisableUser(self,request,queryset):
         User.objects.filter(username=user).update(is_active = False)
         UsersList.append(user)
 
+    # Displaying success message for disabling user
     allusers = ', '.join(UsersList)
-    messages.success(request, "The users " + allusers + " Disabled successfully")
+    messages.success(request, "The users: " + allusers + " Disabled successfully.")
 
 
 # Enable user function
@@ -172,8 +181,9 @@ def EnableUser(self,request,queryset):
         User.objects.filter(username=user).update(is_active = True)
         UsersList.append(user)
 
+    # Displaying success message for enabling user
     allusers = ', '.join(UsersList)
-    messages.success(request, "The users " + allusers + " Enabled successfully")
+    messages.success(request, "The users: " + allusers + " Enabled successfully.")
 
 
 # Define an inline admin descriptor for UserDetail model
