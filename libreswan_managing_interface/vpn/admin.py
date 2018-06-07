@@ -10,10 +10,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate
-
-
-"""
-    OS imported to check and create dir
+""" OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
     Admin imported to access user submitted info for VPN models
@@ -24,37 +21,42 @@ from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate
 """
 
 # Register your models here.
-
-
-"""
-    write_to_file function -
-    Used to write config values to /etc/ipsec.d/CONNECTION_NAME.conf
-    The values will be loaded from there without disturbing other connections
+""" write_to_file function -
+    writing data to /etc/ipsec.d/connection_name.conf file so that the connection can be saved and loaded from the conf* directory without disturbing other connections
+    Opening file in w+ mode, as it will create the file if it doesn't exist otherwise write it
+    Checking If attribute exists and has a value, so as to avoid writing attributes with no value to the configuration file
+    Writing to file the non empty attributes and their respective value
 """
 
 
 def write_to_file(modeladmin, request, queryset):
+    ConnectionsList = []
     for qs in queryset:
         list_values = [
-            'also', 'left', 'leftsubnet', 'right',
-            'rightsubnet', 'keyringtries', 'auto', 'leftcert', 'leftid',
-            'leftsendcert', 'leftrsasigkey', 'rightaddresspool', 'rightca',
-            'modecfgdns', 'narrowing', 'dpddelay', 'dpdtimeout', 'dpdaction',
-            'ikev2', 'rekey', 'fragmentation'
+            'also', 'left', 'leftsubnet', 'right', 'rightsubnet',
+            'keyringtries', 'auto', 'leftcert', 'leftid', 'leftsendcert',
+            'leftrsasigkey', 'rightaddresspool', 'rightca', 'modecfgdns',
+            'narrowing', 'dpddelay', 'dpdtimeout', 'dpdaction', 'ikev2',
+            'rekey', 'fragmentation'
         ]
         lastval = len(list_values)
-        file = "/etc/ipsec.conf"  # writing data to ipsec.conf file
-        f = open(file, 'a')  # Opening file in append mode
-        f.write(
-            "conn\t" + qs.connection_name + "\n")  # Writing the connection name
+        file = "/etc/ipsec.d/" + qs.connection_name + ".conf"
+        f = open(file, 'w+')
+        f.write("conn\t" + qs.connection_name + "\n")
         for i in range(0, lastval):
-            current = list_values[i]  # Getting the current value of attribute
-            if (hasattr(qs, current) and getattr(qs, current) !=
-                    ''):  # Check If attribute exists and has a value
-                f.write("\t\t" + current + "=" + getattr(qs, current) +
-                        "\n")  # Write to file the attribute and value
+            current = list_values[i]
+            if (hasattr(qs, current) and getattr(qs, current) != ''):
+                f.write("\t\t" + current + "=" + getattr(qs, current) + "\n")
         f.write("\n")
-        f.close()  # Closing the file
+        f.close()
+
+        # Adding connection name to the Connectionslist, So as to give a single success notification/prompt for all connections
+        ConnectionsList.append(qs.connection_name)
+
+    # Displaying success message for certificate generation
+    allconnections = ', '.join(ConnectionsList)
+    messages.success(request, "Connection profiles: " + allconnections +
+                     " created/updated successfully.")
 
 
 # Creating admin task options as this will display(list_display) info in the admin panel
@@ -63,15 +65,19 @@ class TaskAdmin(admin.ModelAdmin):
     actions = [write_to_file]
 
 
-# Defining global variables for using in multiple functions
-tempdirname = 'temp_cert/'  # Temporary directory name
-dirname = 'certs/'  # Certificates directory name
+""" Defining global variables for using in multiple functions
+    tempdirname - Temporary certificates holding directory name
+    dirname - Final .p12 certificates holding directory name
+"""
+tempdirname = 'temp_cert/'
+dirname = 'certs/'
+""" Check if folder exists/create folder for storing the certificates
+    this function is checking if the temporary and the final certificates holding dierctories exists
+"""
 
 
-# Check if folder exists/create folder for storing the certificates
 def check_folders(request):
-    if (os.path.isdir("temp_cert/") !=
-            True):  # check if temporary certs dir exists
+    if (os.path.isdir("temp_cert/") != True):
         cmd = ['mkdir', tempdirname]
         p = subprocess.Popen(cmd, shell=False)
         out, err = p.communicate('\n')
@@ -81,7 +87,7 @@ def check_folders(request):
                          "Directory for saving temporary certificates: " +
                          tempdirname + " created successfully.")
 
-    if (os.path.isdir("certs/") != True):  # check if certs dir exists
+    if (os.path.isdir("certs/") != True):
         cmd = ['mkdir', dirname]
         q = subprocess.Popen(cmd, shell=False)
         out, err = q.communicate('\n')
@@ -142,50 +148,39 @@ def dlt_temp_cert(filename):
 """
    Generate user certificate -
    Steps for generating temporary/intermediate certificates:
-   Step 1 - Generate random names for certs(public and private)
-   Step 2 - Generate private and public keys
-   Step 3 - Create .p12 file using the above keys
-   Step 4 - Delete the certificates generated in Step 2.
-   Step 5 - Save the information to database.
+   Step 1 [Generate random names for certs(public and private)] - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
+   Step 2 [Generate private and public keys] - Generate intermediate certificates, these will be used to generate the final .p12 certs
+   Step 3 [Create .p12 file using the above keys] - Generating the .p12 certificates, they are the final certs which will be used to establish connections
+   Step 4 [Delete the certificates generated in Step 2] - Delete the temporary certificates, as they were only required to generate .p12 (final) certs
+   Step 5 [Save the information to database] - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
 """
 
 
 def generate_user_certificate(self, request, queryset):
     check_folders(request)
     UsersList = []
-    # For each qs in queryset generate the certificates.
+    # For each qs in queryset generate the certificates. Taking input username, it'll be the name of the final generated certificate
     for qs in queryset:
-        username = unicode(
-            qs.username
-        )  # Taking input username, it'll be the name of the final generated certificate
-
-        # Step 1 - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
+        username = unicode(qs.username)
         keyname = random_name('.pem')
         certname = random_name('.pem')
-
-        # Step 2 - Generate intermediate certificates, these will be used to generate the final .p12 certs
         gen_temp_keys(keyname, certname)
-
-        # Step 3 - Generating the .p12 certificates, they are the final certs which will be used to establish connections
         password = random_name('')
         gen_p12_cert(keyname, certname, password, username)
-
-        # Step 4 - Delete the temporary certificates, as they were only required to generate .p12 (final) certs
         dlt_temp_cert(keyname)
         dlt_temp_cert(certname)
 
-        # Step 5 - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
         GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
 
-        # Adding user to the userslist, So as to give a success notification/prompt
+        # Adding user to the userslist, So as to give a single success notification/prompt for all connections
         UsersList.append(username)
 
     # Displaying success message for certificate generation
     allusers = ', '.join(UsersList)
     messages.success(
         request,
-        "Certificate/s for user/s: " + allusers + " generated successfully.")
+        "Certificates for users: " + allusers + " generated successfully.")
 
 
 # Disable user function, this is being used to disable user profile. So, as to prevent user login into this portal
@@ -245,12 +240,9 @@ class UserAdmin(admin.ModelAdmin):
 
 # Changing Admin header text, this is done to customize the Admin interface
 admin.site.site_header = 'Libreswan Administration'
-
-
 """
     Displaying the models to admin
 """
-
 
 # For users
 admin.site.unregister(User)

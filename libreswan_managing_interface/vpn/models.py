@@ -6,8 +6,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
-
-
 """ Subnet to Subnet Model for storing values to CONNECTION_NAME.conf
     The connection will be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
     ipsec auto --start <connname> will be used to start connection in case of subnet to subnet (lan to lan) connections
