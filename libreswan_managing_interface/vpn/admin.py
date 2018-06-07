@@ -78,9 +78,7 @@ dirname = 'certs/'
 
 def check_folders(request):
     if (os.path.isdir("temp_cert/") != True):
-        cmd = ['mkdir', tempdirname]
-        p = subprocess.Popen(cmd, shell=False)
-        out, err = p.communicate('\n')
+        os.makedirs(tempdirname, 0755);
 
         # Success message on folder creation
         messages.success(request,
@@ -88,9 +86,7 @@ def check_folders(request):
                          tempdirname + " created successfully.")
 
     if (os.path.isdir("certs/") != True):
-        cmd = ['mkdir', dirname]
-        q = subprocess.Popen(cmd, shell=False)
-        out, err = q.communicate('\n')
+        os.makedirs(dirname, 0755);
 
         # Success message on folder creation
         messages.success(request, "Directory for saving .p12 certificates: " +
