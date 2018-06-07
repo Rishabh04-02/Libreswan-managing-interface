@@ -36,7 +36,7 @@ from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate
 def write_to_file(modeladmin, request, queryset):
     for qs in queryset:
         list_values = [
-            'also', 'connaddrfamily', 'left', 'leftsubnet', 'right',
+            'also', 'left', 'leftsubnet', 'right',
             'rightsubnet', 'keyringtries', 'auto', 'leftcert', 'leftid',
             'leftsendcert', 'leftrsasigkey', 'rightaddresspool', 'rightca',
             'modecfgdns', 'narrowing', 'dpddelay', 'dpdtimeout', 'dpdaction',

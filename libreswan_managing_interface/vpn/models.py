@@ -25,12 +25,6 @@ class subnettosubnet(models.Model):
         default='',
         blank=True,
         help_text="The value is a section <b><a>name</a></b>")
-    connaddrfamily = models.CharField(
-        max_length=4,
-        default='ipv4',
-        blank=True,
-        help_text=
-        "Valid/accepted values are <b><a>ipv4</a></b> OR <b><a>ipv6</a></b>")
     left = models.CharField(
         max_length=16,
         default='',
