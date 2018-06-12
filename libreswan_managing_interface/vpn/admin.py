@@ -170,6 +170,8 @@ def generate_user_certificate(self, request, queryset):
 
         GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
+        GenerateCertificate.objects.filter(username__username=username).update(
+            key_name=keyname)
 
         # Adding user to the userslist, So as to give a single success notification/prompt for all connections
         UsersList.append(username)
@@ -223,17 +225,14 @@ class UserAuthAdmin(BaseUserAdmin):
     list_display = [
         'username', 'email', 'is_active', 'last_login', 'date_joined'
     ]
-    actions = [generate_user_certificate, EnableUser, DisableUser]
+    actions = [EnableUser, DisableUser]
     inlines = (UserDetailInline,)
 
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email_verified', 'token', 'cert_password']
+    list_display = ['username', 'email_verified', 'token', 'cert_password', 'key_name']
     actions = [generate_user_certificate]
-
-    def has_add_permission(self, request):
-        return False
 
 
 # Changing Admin header text, this is done to customize the Admin interface

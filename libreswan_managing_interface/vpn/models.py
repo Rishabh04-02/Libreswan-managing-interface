@@ -196,6 +196,11 @@ class GenerateCertificate(models.Model):
         default='',
         blank=True,
         help_text="<b><a>System Generated - Do not alter</a></b>")
+    key_name = models.CharField(
+        max_length=15,
+        default='',
+        blank=True,
+        help_text="<b><a>System Generated - Do not alter</a></b>")
 
     def __unicode__(self):
         return unicode(self.username)
