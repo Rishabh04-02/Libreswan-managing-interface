@@ -38,7 +38,7 @@ def write_to_file(modeladmin, request, queryset):
             'keyringtries', 'auto', 'leftcert', 'leftid', 'leftsendcert',
             'leftrsasigkey', 'rightaddresspool', 'rightca', 'modecfgdns',
             'narrowing', 'dpddelay', 'dpdtimeout', 'dpdaction', 'ikev2',
-            'rekey', 'fragmentation'
+            'rekey', 'fragmentation', 'mobike'
         ]
         lastval = len(list_values)
         file = "/etc/ipsec.d/" + qs.connection_name + ".conf"

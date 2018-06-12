@@ -144,6 +144,11 @@ class Vpnforremotehost(models.Model):
         help_text=
         "Valid - <b><a>clear</a></b> OR <b><a>restart</a></b> OR <b><a>hold</a></b>"
     )
+    mobike = models.CharField(
+        max_length=3,
+        default='no',
+        blank=True,
+        help_text="Valid - <b><a>no</a></b> OR <b><a>yes</a></b>")
     auto = models.CharField(
         max_length=16,
         default='',
