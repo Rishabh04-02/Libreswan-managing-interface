@@ -31,6 +31,7 @@ from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate
 
 def write_to_file(modeladmin, request, queryset):
     ConnectionsList = []
+    SubnetOrVpn = 0
     for qs in queryset:
         list_values = [
             'also', 'left', 'leftsubnet', 'right', 'rightsubnet',
@@ -47,11 +48,26 @@ def write_to_file(modeladmin, request, queryset):
             current = list_values[i]
             if (hasattr(qs, current) and getattr(qs, current) != ''):
                 f.write("\t\t" + current + "=" + getattr(qs, current) + "\n")
+                if current == 'leftcert':
+                    SubnetOrVpn = 1
         f.write("\n")
         f.close()
 
         # Adding connection name to the Connectionslist, So as to give a single success notification/prompt for all connections
         ConnectionsList.append(qs.connection_name)
+        if SubnetOrVpn == 1:
+            #ipsec auto --add <conname>
+            cmd = [
+                'ipsec', 'auto', '--add',
+                '/etc/ipsec.d/' + qs.connection_name + '.conf'
+            ]
+        else:
+            cmd = [
+                'ipsec', 'auto', '--start',
+                '/etc/ipsec.d/' + qs.connection_name + '.conf'
+            ]
+        s = subprocess.Popen(cmd, shell=False)
+        out, err = s.communicate('\n')
 
     # Displaying success message for certificate generation
     allconnections = ', '.join(ConnectionsList)
@@ -78,7 +94,7 @@ dirname = 'certs/'
 
 def check_folders(request):
     if (os.path.isdir("temp_cert/") != True):
-        os.makedirs(tempdirname, 0755);
+        os.makedirs(tempdirname, 0755)
 
         # Success message on folder creation
         messages.success(request,
@@ -86,7 +102,7 @@ def check_folders(request):
                          tempdirname + " created successfully.")
 
     if (os.path.isdir("certs/") != True):
-        os.makedirs(dirname, 0755);
+        os.makedirs(dirname, 0755)
 
         # Success message on folder creation
         messages.success(request, "Directory for saving .p12 certificates: " +
@@ -133,7 +149,7 @@ def gen_p12_cert(keyname, certname, password, username):
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n')
-    os.chmod(dirname + username +'.p12', 0400)
+    os.chmod(dirname + username + '.p12', 0400)
 
 
 # Delete temporary certificates, as .p12 file is generated and they're no longer required
@@ -231,7 +247,9 @@ class UserAuthAdmin(BaseUserAdmin):
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email_verified', 'token', 'cert_password', 'key_name']
+    list_display = [
+        'username', 'email_verified', 'token', 'cert_password', 'key_name'
+    ]
     actions = [generate_user_certificate]
 
 

@@ -37,7 +37,7 @@ Testing the project by starting up the Django development server with this comma
 ```
 sudo ./manage.py runserver 127.0.0.1:8000
 ```
-Note - Use ``sudo`` before running server as it needs to write ``ipsec.conf``  file located at ``/etc/ipsec.conf`` and this file can't be written without using ``sudo``.
+Note - Use ``sudo`` before running server as it needs to write ``etc/conf.d/``  and will generate secured keys and certificates.
 
 In the web browser, visit the server's domain name or IP address followed by ``:8000``:
 ```
