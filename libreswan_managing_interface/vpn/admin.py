@@ -118,7 +118,7 @@ def random_name(ntype):
 
 
 # Generating temporary rsa key pair/certificates, will be used to create .p12 files
-def gen_temp_keys(keyname, certname):
+def gen_temp_keys(keyname, certname, username):
     expiration_period = '500'
     cmd = [
         'openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout',
@@ -132,7 +132,7 @@ def gen_temp_keys(keyname, certname):
     r.stdin.write("Ottawa\n")
     r.stdin.write("No Hats Corporation\n")
     r.stdin.write("Clients\n")
-    r.stdin.write("username.nohats.ca\n")
+    r.stdin.write(username+".nohats.ca\n")
     r.stdin.write("info@izonetelecom.com\n")
     # getting the output/errors
     out, err = r.communicate('\n')
@@ -143,7 +143,7 @@ def gen_temp_keys(keyname, certname):
 # Generate .p12 certificates, will be used to establish connection
 def gen_p12_cert(keyname, certname, password, username):
     cmd = [
-        'openssl', 'pkcs12', '-inkey', tempdirname + keyname, '-in',
+        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname, '-in',
         tempdirname + certname, '-export', '-out', dirname + username + '.p12',
         '-password', 'pass:' + password
     ]
@@ -178,7 +178,7 @@ def generate_user_certificate(self, request, queryset):
         username = unicode(qs.username)
         keyname = random_name('.pem')
         certname = random_name('.pem')
-        gen_temp_keys(keyname, certname)
+        gen_temp_keys(keyname, certname, username)
         password = random_name('')
         gen_p12_cert(keyname, certname, password, username)
         #dlt_temp_cert(keyname)
