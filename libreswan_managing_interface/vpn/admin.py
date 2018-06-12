@@ -121,6 +121,7 @@ def gen_temp_keys(keyname, certname):
     # getting the output/errors
     out, err = r.communicate('\n')
     r.stdin.close()
+    os.chmod(tempdirname + keyname, 0400)
 
 
 # Generate .p12 certificates, will be used to establish connection
@@ -132,6 +133,7 @@ def gen_p12_cert(keyname, certname, password, username):
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n')
+    os.chmod(dirname + username +'.p12', 0400)
 
 
 # Delete temporary certificates, as .p12 file is generated and they're no longer required
@@ -163,7 +165,7 @@ def generate_user_certificate(self, request, queryset):
         gen_temp_keys(keyname, certname)
         password = random_name('')
         gen_p12_cert(keyname, certname, password, username)
-        dlt_temp_cert(keyname)
+        #dlt_temp_cert(keyname)
         dlt_temp_cert(certname)
 
         GenerateCertificate.objects.filter(username__username=username).update(
