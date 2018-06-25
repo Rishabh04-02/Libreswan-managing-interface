@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .models import GenerateCertificate
+from .models import GenerateCertificate, UserProfile
 from .tokens import account_activation_token
 from django.http import HttpResponse
 from django.views import View
@@ -56,9 +56,8 @@ def activate(request, uidb64, token):
 
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
-        #create user profile and update this there not in generate certs
-        GenerateCertificate.objects.filter(username__username=user).update(
-            email_verified=True)
+        # Creating entry to profile.email_verified, as to fetch and display it to the admin.
+        UserProfile.objects.create(username_id = uid, email_verified=True)
         user.save()
         return HttpResponse(
             '<center>Thank you for your email confirmation. Now you can login your account.</center>'

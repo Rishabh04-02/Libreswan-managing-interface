@@ -182,17 +182,25 @@ class Vpnforremotehost(models.Model):
         return self.connection_name
 
 
+""" Model for User Profile creation, will be used to store some values regarding certificate generation, email verifications etc.
+"""
+
+class UserProfile(models.Model):
+    username = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_verified = models.BooleanField(
+        default=False,
+        help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
+
+    def __unicode__(self):
+        return unicode(self.username)
+
 """ Model for certificate generation, will be used to update token/cert_password values
-    and will also check whether email is verified or not
 """
 
 
 class GenerateCertificate(models.Model):
 
     username = models.OneToOneField(User, on_delete=models.CASCADE)
-    email_verified = models.BooleanField(
-        default=False,
-        help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
     cert_password = models.CharField(
         max_length=20,
         default='',

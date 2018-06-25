@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate
+from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate, UserProfile
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -235,6 +235,11 @@ class UserDetailInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'User Details'
 
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'User Profiles'
+
 
 # Define a new User admin, this is the default user admin model
 class UserAuthAdmin(BaseUserAdmin):
@@ -242,12 +247,15 @@ class UserAuthAdmin(BaseUserAdmin):
         'username', 'email', 'is_active', 'last_login', 'date_joined'
     ]
     actions = [EnableUser, DisableUser]
-    inlines = (UserDetailInline,)
+    inlines = (UserDetailInline, UserProfileInline)
 
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email_verified', 'cert_password', 'key_name']
+    def email_verified(self,obj):
+        #return UserProfile.email_verified
+        return UserProfile.objects.get().email_verified
     actions = [generate_user_certificate]
 
 
