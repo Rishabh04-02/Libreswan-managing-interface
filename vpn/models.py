@@ -12,8 +12,6 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
 
-
-
 # Create your models here.
 """ Subnet to Subnet Model for storing values to CONNECTION_NAME.conf
     The connection will be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
@@ -185,6 +183,7 @@ class Vpnforremotehost(models.Model):
 """ Model for User Profile creation, will be used to store some values regarding certificate generation, email verifications etc.
 """
 
+
 class UserProfile(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
     email_verified = models.BooleanField(
@@ -193,6 +192,7 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
+
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
@@ -214,5 +214,3 @@ class GenerateCertificate(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
-
-

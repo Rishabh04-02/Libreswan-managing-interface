@@ -235,6 +235,7 @@ class UserDetailInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'User Details'
 
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
@@ -253,9 +254,12 @@ class UserAuthAdmin(BaseUserAdmin):
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email_verified', 'cert_password', 'key_name']
-    def email_verified(self,obj):
-        #return UserProfile.email_verified
-        return UserProfile.objects.get().email_verified
+    # Fetching the email_verified field from UserProfile Model for accessibility
+    def email_verified(self, obj):
+        return obj.username.userprofile.email_verified
+    # Using boolean field for convenience
+    email_verified.boolean = True
+
     actions = [generate_user_certificate]
 
 
