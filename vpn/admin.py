@@ -132,7 +132,7 @@ def gen_temp_keys(keyname, certname, username):
     r.stdin.write("Ottawa\n")
     r.stdin.write("No Hats Corporation\n")
     r.stdin.write("Clients\n")
-    r.stdin.write(username+".nohats.ca\n")
+    r.stdin.write(username + ".nohats.ca\n")
     r.stdin.write("info@izonetelecom.com\n")
     # getting the output/errors
     out, err = r.communicate('\n')
@@ -143,9 +143,9 @@ def gen_temp_keys(keyname, certname, username):
 # Generate .p12 certificates, will be used to establish connection
 def gen_p12_cert(keyname, certname, password, username):
     cmd = [
-        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname, '-in',
-        tempdirname + certname, '-export', '-out', dirname + username + '.p12',
-        '-password', 'pass:' + password
+        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname,
+        '-in', tempdirname + certname, '-export', '-out',
+        dirname + username + '.p12', '-password', 'pass:' + password
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n')
@@ -247,9 +247,7 @@ class UserAuthAdmin(BaseUserAdmin):
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = [
-        'username', 'email_verified', 'token', 'cert_password', 'key_name'
-    ]
+    list_display = ['username', 'email_verified', 'cert_password', 'key_name']
     actions = [generate_user_certificate]
 
 

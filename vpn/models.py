@@ -4,6 +4,15 @@ import string
 import random
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import render, redirect
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+
+
 
 # Create your models here.
 """ Subnet to Subnet Model for storing values to CONNECTION_NAME.conf
@@ -180,20 +189,8 @@ class Vpnforremotehost(models.Model):
 
 class GenerateCertificate(models.Model):
 
-    def gen_token():
-        gen_name = ''.join(
-            random.SystemRandom().choice(string.ascii_lowercase + string.digits)
-            for _ in range(20))
-        return gen_name
-
-    user_token = gen_token()
     username = models.OneToOneField(User, on_delete=models.CASCADE)
-    token = models.CharField(
-        max_length=20,
-        default=user_token,
-        help_text="<b><a>System Generated - Do not alter</a></b>")
-    email_verified = models.CharField(
-        max_length=5,
+    email_verified = models.BooleanField(
         default=False,
         help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
     cert_password = models.CharField(
@@ -209,3 +206,5 @@ class GenerateCertificate(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
+
+
