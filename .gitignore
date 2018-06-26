@@ -1,5 +1,6 @@
 #custom ignored files
 libreswanenv
+librenv
 libreswan_managing_interface/database.cnf
 .idea/workspace.xml
 temp_cert/*

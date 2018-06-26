@@ -122,7 +122,7 @@ USE_TZ = True
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Console baackend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'abc@lsdkf.com'
+DEFAULT_FROM_EMAIL = 'noreply@libreswan.org'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
