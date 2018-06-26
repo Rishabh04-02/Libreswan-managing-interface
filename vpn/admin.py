@@ -94,7 +94,7 @@ dirname = 'certs/'
 
 def check_folders(request):
     if (os.path.isdir("temp_cert/") != True):
-        os.makedirs(tempdirname, 0755)
+        os.makedirs(tempdirname, 0o755, True)
 
         # Success message on folder creation
         messages.success(request,
@@ -102,7 +102,7 @@ def check_folders(request):
                          tempdirname + " created successfully.")
 
     if (os.path.isdir("certs/") != True):
-        os.makedirs(dirname, 0755)
+        os.makedirs(dirname, 0o755, True)
 
         # Success message on folder creation
         messages.success(request, "Directory for saving .p12 certificates: " +
@@ -137,7 +137,7 @@ def gen_temp_keys(keyname, certname, username):
     # getting the output/errors
     out, err = r.communicate('\n')
     r.stdin.close()
-    os.chmod(tempdirname + keyname, 0400)
+    os.chmod(tempdirname + keyname, 0o400)
 
 
 # Generate .p12 certificates, will be used to establish connection
@@ -149,7 +149,7 @@ def gen_p12_cert(keyname, certname, password, username):
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n')
-    os.chmod(dirname + username + '.p12', 0400)
+    os.chmod(dirname + username + '.p12', 0o400)
 
 
 # Delete temporary certificates, as .p12 file is generated and they're no longer required
