@@ -127,15 +127,15 @@ def gen_temp_keys(keyname, certname, username):
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     # writing the values to PIPE
-    r.stdin.write("CA\n")
-    r.stdin.write("Ontario\n")
-    r.stdin.write("Ottawa\n")
-    r.stdin.write("No Hats Corporation\n")
-    r.stdin.write("Clients\n")
-    r.stdin.write(username + ".nohats.ca\n")
-    r.stdin.write("info@izonetelecom.com\n")
+    r.stdin.write("CA\n".encode())
+    r.stdin.write("Ontario\n".encode())
+    r.stdin.write("Ottawa\n".encode())
+    r.stdin.write("No Hats Corporation\n".encode())
+    r.stdin.write("Clients\n".encode())
+    r.stdin.write("username".encode())
+    r.stdin.write("info@izonetelecom.com\n".encode())
     # getting the output/errors
-    out, err = r.communicate('\n')
+    out, err = r.communicate('\n'.encode())
     r.stdin.close()
     os.chmod(tempdirname + keyname, 0o400)
 
@@ -148,7 +148,7 @@ def gen_p12_cert(keyname, certname, password, username):
         dirname + username + '.p12', '-password', 'pass:' + password
     ]
     s = subprocess.Popen(cmd, shell=False)
-    out, err = s.communicate('\n')
+    out, err = s.communicate('\n'.encode())
     os.chmod(dirname + username + '.p12', 0o400)
 
 
@@ -156,7 +156,7 @@ def gen_p12_cert(keyname, certname, password, username):
 def dlt_temp_cert(filename):
     cmd = ['rm', '-rf', tempdirname + filename]
     s = subprocess.Popen(cmd, shell=False)
-    out, err = s.communicate('\n')
+    out, err = s.communicate('\n'.encode())
 
 
 """
@@ -175,7 +175,7 @@ def generate_user_certificate(self, request, queryset):
     UsersList = []
     # For each qs in queryset generate the certificates. Taking input username, it'll be the name of the final generated certificate
     for qs in queryset:
-        username = unicode(qs.username)
+        username = str(qs.username)
         keyname = random_name('.pem')
         certname = random_name('.pem')
         gen_temp_keys(keyname, certname, username)
