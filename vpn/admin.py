@@ -21,6 +21,13 @@ from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate, UserP
 """
 
 # Register your models here.
+""" Defining global variables for using in multiple functions
+    tempdirname - Temporary certificates holding directory name
+    dirname - Final .p12 certificates holding directory name
+"""
+tempdirname = 'temp_cert/'
+dirname = 'certs/'
+configdirname = 'config/'
 """ write_to_file function -
     writing data to /etc/ipsec.d/connection_name.conf file so that the connection can be saved and loaded from the conf* directory without disturbing other connections
     Opening file in w+ mode, as it will create the file if it doesn't exist otherwise write it
@@ -92,14 +99,13 @@ class TaskAdmin(admin.ModelAdmin):
 def write_configuration_to_file(modeladmin, request, queryset):
 
     # Creating directory for saving certificates
-    if (os.path.isdir("config/") != True):
-        os.makedirs('config/', 0o755, True)
+    if (os.path.isdir(configdirname) != True):
+        os.makedirs(configdirname, 0o755, True)
 
         # Success message on folder creation
-        messages.success(
-            request,
-            "Directory for saving default configuration file: `config/` created successfully."
-        )
+        messages.success(request,
+                         "Directory for saving default configuration file: `" +
+                         configdirname + "` created successfully.")
 
     for qs in queryset:
         qs.expiration_period = str(qs.expiration_period)
@@ -109,19 +115,17 @@ def write_configuration_to_file(modeladmin, request, queryset):
             'common_name', 'email_address'
         ]
         lastval = len(list_values)
-        file = "config/default_certificate.conf"
+        file = configdirname + "default_certificate.conf"
         f = open(file, 'w+')
         for i in range(0, lastval):
             current = list_values[i]
             if (hasattr(qs, current) and getattr(qs, current) != ''):
-                f.write(current + "=" + getattr(qs, current) + "\n")
+                f.write(getattr(qs, current) + "\n")
         f.close()
 
     # Displaying success message on saving default_configuration file
-    messages.success(
-        request,
-        "Default Certificate configuration file: `config/default_certificate.conf` updated."
-    )
+    messages.success(request, "Default Certificate configuration file: `" +
+                     configdirname + "default_certificate.conf` updated.")
 
 
 write_configuration_to_file.short_description = "Save Configuration as Default configuration"
@@ -136,19 +140,13 @@ class TaskConfigureAdmin(admin.ModelAdmin):
     actions = [write_configuration_to_file]
 
 
-""" Defining global variables for using in multiple functions
-    tempdirname - Temporary certificates holding directory name
-    dirname - Final .p12 certificates holding directory name
-"""
-tempdirname = 'temp_cert/'
-dirname = 'certs/'
 """ Check if folder exists/create folder for storing the certificates
     this function is checking if the temporary and the final certificates holding dierctories exists
 """
 
 
 def check_folders(request):
-    if (os.path.isdir("temp_cert/") != True):
+    if (os.path.isdir(tempdirname) != True):
         os.makedirs(tempdirname, 0o755, True)
 
         # Success message on folder creation
@@ -156,7 +154,7 @@ def check_folders(request):
                          "Directory for saving temporary certificates: " +
                          tempdirname + " created successfully.")
 
-    if (os.path.isdir("certs/") != True):
+    if (os.path.isdir(dirname) != True):
         os.makedirs(dirname, 0o755, True)
 
         # Success message on folder creation
@@ -165,30 +163,44 @@ def check_folders(request):
 
 
 # Generate random name, will be used to assign name to cert and keys
-def random_name(ntype):
+def random_name(leng, ntype):
     gen_name = ''.join(
         random.SystemRandom().choice(string.ascii_lowercase + string.digits)
-        for _ in range(10)) + ntype
+        for _ in range(leng)) + ntype
     return gen_name
 
 
 # Generating temporary rsa key pair/certificates, will be used to create .p12 files
 def gen_temp_keys(keyname, certname, username):
-    expiration_period = '500'
+    #Fetch default configuration from file to write it to the certs
+    DefaultConfigFile = open(configdirname + 'default_certificate.conf', 'r')
+    FileContent = DefaultConfigFile.readlines()
+    ExpirationPeriod = FileContent[0]
+    CountryName = FileContent[1]
+    StateProvince = FileContent[2]
+    LocalityName = FileContent[3]
+    OrgName = FileContent[4]
+    OrgUnit = FileContent[5]
+    CommonName = FileContent[6]
+    EmailAddress = FileContent[7]
+
+    if CommonName.strip('\n') == "user":
+        CommonName = username
+
     cmd = [
         'openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout',
-        tempdirname + keyname, '-x509', '-days', expiration_period, '-out',
+        tempdirname + keyname, '-x509', '-days', ExpirationPeriod, '-out',
         tempdirname + certname
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     # writing the values to PIPE
-    r.stdin.write("CA\n".encode())
-    r.stdin.write("Ontario\n".encode())
-    r.stdin.write("Ottawa\n".encode())
-    r.stdin.write("No Hats Corporation\n".encode())
-    r.stdin.write("Clients\n".encode())
-    r.stdin.write(username.encode())
-    r.stdin.write("info@izonetelecom.com\n".encode())
+    r.stdin.write(CountryName.encode())
+    r.stdin.write(StateProvince.encode())
+    r.stdin.write(LocalityName.encode())
+    r.stdin.write(OrgName.encode())
+    r.stdin.write(OrgUnit.encode())
+    r.stdin.write(CommonName.encode())
+    r.stdin.write(EmailAddress.encode())
     # getting the output/errors
     out, err = r.communicate('\n'.encode())
     r.stdin.close()
@@ -231,10 +243,10 @@ def generate_user_certificate(self, request, queryset):
     # For each qs in queryset generate the certificates. Taking input username, it'll be the name of the final generated certificate
     for qs in queryset:
         username = str(qs.username)
-        keyname = random_name('.pem')
-        certname = random_name('.pem')
+        keyname = random_name(10, '.pem')
+        certname = random_name(10, '.pem')
         gen_temp_keys(keyname, certname, username)
-        password = random_name('')
+        password = random_name(20, '')
         gen_p12_cert(keyname, certname, password, username)
         #dlt_temp_cert(keyname)
         dlt_temp_cert(certname)
