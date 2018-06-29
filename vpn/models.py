@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
+from django.core.validators import MaxValueValidator
 
 # Create your models here.
 """ Subnet to Subnet Model for storing values to CONNECTION_NAME.conf
@@ -214,3 +215,54 @@ class GenerateCertificate(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
+
+
+""" Model for writing certificate configuration to a file, the configuration will be loaded from a file while generatig certificates.
+"""
+
+
+class CertificateConfiguration(models.Model):
+
+    country_name = models.CharField(
+        max_length=2,
+        default='CA',
+        blank=False,
+        help_text="Enter 2 Letter country code")
+    state_province = models.CharField(
+        max_length=20,
+        default='Ontario',
+        blank=False,
+        help_text="Enter State or Province Name (full name)")
+    locality_name = models.CharField(
+        max_length=20,
+        default='Ottawa',
+        blank=False,
+        help_text="Enter Locality name (eg.city)")
+    organization_name = models.CharField(
+        max_length=30,
+        default='No Hats Corporation',
+        blank=False,
+        help_text="Enter Organization name (eg. company ltd)")
+    organization_unit = models.CharField(
+        max_length=20,
+        default='Clients',
+        blank=False,
+        help_text="Enter Organization unit name (eg. section name)")
+    common_name = models.CharField(
+        max_length=20,
+        default='username',
+        blank=False,
+        help_text="Enter Common Name (eg, your name or your server's hostname)")
+    email_address = models.CharField(
+        max_length=30,
+        default='info@izonetelecom.com',
+        blank=False,
+        help_text="Enter your Email Address")
+    expiration_period = models.PositiveIntegerField(
+        validators=[MaxValueValidator(9999)],
+        default='365',
+        blank=False,
+        help_text="Certificate Expiration period in days, value <= 9999")
+
+    def __str__(self):
+        return self.organization_name

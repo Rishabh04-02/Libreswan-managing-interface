@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate, UserProfile
+from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate, UserProfile, CertificateConfiguration
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -81,6 +81,61 @@ class TaskAdmin(admin.ModelAdmin):
     actions = [write_to_file]
 
 
+""" write_configuration_to_file function -
+    It writes the selected user configuration to the default configuration file,
+    The values will be loaded from this file while generating the certificates.
+    In this way user can create as many configurations as he wants and has the option to choose any configuration as default.
+    All the certificates generated will use that configuration.
+"""
+
+
+def write_configuration_to_file(modeladmin, request, queryset):
+
+    # Creating directory for saving certificates
+    if (os.path.isdir("config/") != True):
+        os.makedirs('config/', 0o755, True)
+
+        # Success message on folder creation
+        messages.success(
+            request,
+            "Directory for saving default configuration file: `config/` created successfully."
+        )
+
+    for qs in queryset:
+        qs.expiration_period = str(qs.expiration_period)
+        list_values = [
+            'expiration_period', 'country_name', 'state_province',
+            'locality_name', 'organization_name', 'organization_unit',
+            'common_name', 'email_address'
+        ]
+        lastval = len(list_values)
+        file = "config/default_certificate.conf"
+        f = open(file, 'w+')
+        for i in range(0, lastval):
+            current = list_values[i]
+            if (hasattr(qs, current) and getattr(qs, current) != ''):
+                f.write(current + "=" + getattr(qs, current) + "\n")
+        f.close()
+
+    # Displaying success message on saving default_configuration file
+    messages.success(
+        request,
+        "Default Certificate configuration file: `config/default_certificate.conf` updated."
+    )
+
+
+write_configuration_to_file.short_description = "Save Configuration as Default configuration"
+
+
+# Creating admin task options as this will display(list_display) info in the admin panel
+class TaskConfigureAdmin(admin.ModelAdmin):
+    list_display = [
+        'organization_name', 'organization_unit', 'common_name',
+        'email_address', 'expiration_period'
+    ]
+    actions = [write_configuration_to_file]
+
+
 """ Defining global variables for using in multiple functions
     tempdirname - Temporary certificates holding directory name
     dirname - Final .p12 certificates holding directory name
@@ -132,7 +187,7 @@ def gen_temp_keys(keyname, certname, username):
     r.stdin.write("Ottawa\n".encode())
     r.stdin.write("No Hats Corporation\n".encode())
     r.stdin.write("Clients\n".encode())
-    r.stdin.write("username".encode())
+    r.stdin.write(username.encode())
     r.stdin.write("info@izonetelecom.com\n".encode())
     # getting the output/errors
     out, err = r.communicate('\n'.encode())
@@ -254,9 +309,11 @@ class UserAuthAdmin(BaseUserAdmin):
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email_verified', 'cert_password', 'key_name']
+
     # Fetching the email_verified field from UserProfile Model for accessibility
     def email_verified(self, obj):
         return obj.username.userprofile.email_verified
+
     # Using boolean field for convenience
     email_verified.boolean = True
 
@@ -275,5 +332,6 @@ admin.site.register(GenerateCertificate, UserAdmin)
 
 # For VPN's and Cert generations
 admin.site.register(User, UserAuthAdmin)
+admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
 admin.site.register(subnettosubnet, TaskAdmin)
 admin.site.register(Vpnforremotehost, TaskAdmin)
