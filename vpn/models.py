@@ -272,19 +272,76 @@ class CertificateConfiguration(models.Model):
 """
 
 
-class GenerateRootCertificate(models.Model):
+class GeneratePrivateKey(models.Model):
 
-    cert_name = models.CharField(
+    key_name = models.CharField(
         max_length=20,
         default='ca.key.pem',
         blank=False,
-        help_text="Certificate name - Do Not Change.")
-    cert_password = models.CharField(
+        help_text="Key identification name")
+    key_password = models.CharField(
         max_length=20,
         default='',
         blank=True,
         help_text="<b><a>Enter the Certificate password</a></b>")
 
     def __str__(self):
-        return self.cert_name
+        return self.key_name
+
+
+""" Model for generating root certificate, This certificate will be used to sign all other certificates.
+"""
+
+
+class GenerateRootCertificate(models.Model):
+
+    country_name = models.CharField(
+        max_length=2,
+        default='CA',
+        blank=False,
+        help_text="Enter 2 Letter country code")
+    state_province = models.CharField(
+        max_length=20,
+        default='Ontario',
+        blank=False,
+        help_text="Enter State or Province Name (full name)")
+    locality_name = models.CharField(
+        max_length=20,
+        default='Ottawa',
+        blank=False,
+        help_text="Enter Locality name (eg.city)")
+    organization_name = models.CharField(
+        max_length=30,
+        default='No Hats Corporation',
+        blank=False,
+        help_text="Enter Organization name (eg. company ltd)")
+    organization_unit = models.CharField(
+        max_length=20,
+        default='Clients',
+        blank=False,
+        help_text="Enter Organization unit name (eg. section name)")
+    common_name = models.CharField(
+        max_length=20,
+        default='user',
+        blank=False,
+        help_text="Enter Common Name (eg, your name or your server's hostname).")
+    email_address = models.CharField(
+        max_length=30,
+        default='@email.com',
+        blank=False,
+        help_text="Enter email address")
+    expiration_period = models.PositiveIntegerField(
+        validators=[MaxValueValidator(9999)],
+        default='365',
+        blank=False,
+        help_text="Certificate Expiration period in days, value <= 9999")
+    password = models.CharField(
+        max_length=30,
+        default='gxpu08tkkmvhs1vm3gi88tkkmvhs1',
+        blank=False,
+        help_text="Enter the Private key password."
+        )
+
+    def __str__(self):
+        return self.organization_name
 

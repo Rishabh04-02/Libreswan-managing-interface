@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GenerateRootCertificate
+from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -251,6 +251,35 @@ def generate_user_certificate(self, request, queryset):
         "Certificates for users: " + allusers + " generated successfully.")
 
 
+def save_key_as_private_key(self, request, queryset):
+
+    # Creating directory for saving certificates
+    if (os.path.isdir(configdirname + 'private/') != True):
+        os.makedirs(configdirname + 'private/', 0o755, True)
+
+        # Success message on folder creation
+        messages.success(
+            request,
+            "Directory for saving private key & root certificate created successfully."
+        )
+
+    for qs in queryset:
+        KeyPassword = qs.key_password
+
+        cmd = [
+            'openssl', 'genrsa', '-aes256', '-out',
+            configdirname + 'private/ca.key.pem', '-passout',
+            'pass:' + KeyPassword, '4096'
+        ]
+        r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+        # getting the output/errors
+        out, err = r.communicate('\n'.encode())
+        r.stdin.close()
+        os.chmod(configdirname + 'private/ca.key.pem', 0o400)
+
+    messages.success(request, "Key successfully saved as private key.")
+
+
 def generate_root_certificate(self, request, queryset):
 
     # Creating directory for saving certificates
@@ -260,26 +289,64 @@ def generate_root_certificate(self, request, queryset):
         # Success message on folder creation
         messages.success(
             request,
-            "Directory for saving private key certificate created successfully."
+            "Directory for saving private key & root certificate created successfully."
         )
 
     for qs in queryset:
-        CertPassword = qs.cert_password
+        qs.expiration_period = str(qs.expiration_period)
+        SetPassword = qs.password
+        list_values = [
+            'expiration_period', 'country_name', 'state_province',
+            'locality_name', 'organization_name', 'organization_unit',
+            'common_name', 'email_address'
+        ]
+        lastval = len(list_values)
+        file = configdirname + "private/root_certificate.conf"
+        f = open(file, 'w+')
+        for i in range(0, lastval):
+            current = list_values[i]
+            if (hasattr(qs, current) and getattr(qs, current) != ''):
+                f.write(getattr(qs, current) + "\n")
+        f.close()
+
+        #Fetch configuration from file to write it to the certs
+        DefaultConfigFile = open(
+            configdirname + 'private/root_certificate.conf', 'r')
+        FileContent = DefaultConfigFile.readlines()
+        ExpirationPeriod = FileContent[0]
+        CountryName = FileContent[1]
+        StateProvince = FileContent[2]
+        LocalityName = FileContent[3]
+        OrgName = FileContent[4]
+        OrgUnit = FileContent[5]
+        CommonName = FileContent[6]
+        EmailAddress = FileContent[7]
 
         cmd = [
-            'openssl', 'genrsa', '-aes256', '-out',
-            configdirname + 'private/ca.key.pem', '-passout',
-            'pass:' + CertPassword, '4096'
+            'openssl', 'req', '-key', configdirname + 'private/ca.key.pem',
+            '-passin', 'pass:' + SetPassword, '-new', '-x509', '-days',
+            ExpirationPeriod, '-sha256', '-out',
+            configdirname + 'private/ca.root.pem'
         ]
         r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+        # writing the values to PIPE
+        r.stdin.write(CountryName.encode())
+        r.stdin.write(StateProvince.encode())
+        r.stdin.write(LocalityName.encode())
+        r.stdin.write(OrgName.encode())
+        r.stdin.write(OrgUnit.encode())
+        r.stdin.write(CommonName.encode())
+        r.stdin.write(EmailAddress.encode())
         # getting the output/errors
         out, err = r.communicate('\n'.encode())
         r.stdin.close()
-        os.chmod(configdirname + 'private/ca.key.pem', 0o400)
+        os.chmod(configdirname + 'private/ca.root.pem', 0o400)
+        os.remove(configdirname + 'private/root_certificate.conf')
 
-    messages.success(request, "Certificate private key generated successfully.")
+    messages.success(request, "Root certificate successfully generated.")
 
 
+    
 
 # Disable user function, this is being used to disable user profile. So, as to prevent user login into this portal
 def DisableUser(self, request, queryset):
@@ -327,7 +394,15 @@ class TaskConfigureAdmin(admin.ModelAdmin):
 
 class TaskConfigureRoot(admin.ModelAdmin):
     list_display = [
-        'cert_name', 'cert_password'
+        'key_name', 'key_password'
+    ]
+    actions = [save_key_as_private_key]
+
+
+class TaskConfigureRootCert(admin.ModelAdmin):
+    list_display = [
+        'organization_name', 'organization_unit', 'common_name',
+        'email_address', 'expiration_period'
     ]
     actions = [generate_root_certificate]
 
@@ -380,7 +455,8 @@ admin.site.register(GenerateCertificate, UserAdmin)
 
 # For VPN's and Cert generations
 admin.site.register(User, UserAuthAdmin)
-admin.site.register(GenerateRootCertificate, TaskConfigureRoot)
+admin.site.register(GeneratePrivateKey, TaskConfigureRoot)
+admin.site.register(GenerateRootCertificate, TaskConfigureRootCert)
 admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
 admin.site.register(SubnetToSubnet, TaskAdmin)
 admin.site.register(VpnForRemoteHost, TaskAdmin)
