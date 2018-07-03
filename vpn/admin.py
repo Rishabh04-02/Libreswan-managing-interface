@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import subnettosubnet, Vpnforremotehost, GenerateCertificate, UserProfile, CertificateConfiguration
+from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GenerateRootCertificate
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -82,12 +82,6 @@ def write_to_file(modeladmin, request, queryset):
                      " created/updated successfully.")
 
 
-# Creating admin task options as this will display(list_display) info in the admin panel
-class TaskAdmin(admin.ModelAdmin):
-    list_display = ['connection_name', 'creation_date']
-    actions = [write_to_file]
-
-
 """ write_configuration_to_file function -
     It writes the selected user configuration to the default configuration file,
     The values will be loaded from this file while generating the certificates.
@@ -129,15 +123,6 @@ def write_configuration_to_file(modeladmin, request, queryset):
 
 
 write_configuration_to_file.short_description = "Save Configuration as Default configuration"
-
-
-# Creating admin task options as this will display(list_display) info in the admin panel
-class TaskConfigureAdmin(admin.ModelAdmin):
-    list_display = [
-        'organization_name', 'organization_unit', 'common_name',
-        'email_address', 'expiration_period'
-    ]
-    actions = [write_configuration_to_file]
 
 
 """ Check if folder exists/create folder for storing the certificates
@@ -266,6 +251,36 @@ def generate_user_certificate(self, request, queryset):
         "Certificates for users: " + allusers + " generated successfully.")
 
 
+def generate_root_certificate(self, request, queryset):
+
+    # Creating directory for saving certificates
+    if (os.path.isdir(configdirname + 'private/') != True):
+        os.makedirs(configdirname + 'private/', 0o755, True)
+
+        # Success message on folder creation
+        messages.success(
+            request,
+            "Directory for saving private key certificate created successfully."
+        )
+
+    for qs in queryset:
+        CertPassword = qs.cert_password
+
+        cmd = [
+            'openssl', 'genrsa', '-aes256', '-out',
+            configdirname + 'private/ca.key.pem', '-passout',
+            'pass:' + CertPassword, '4096'
+        ]
+        r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+        # getting the output/errors
+        out, err = r.communicate('\n'.encode())
+        r.stdin.close()
+        os.chmod(configdirname + 'private/ca.key.pem', 0o400)
+
+    messages.success(request, "Certificate private key generated successfully.")
+
+
+
 # Disable user function, this is being used to disable user profile. So, as to prevent user login into this portal
 def DisableUser(self, request, queryset):
     UsersList = []
@@ -294,6 +309,27 @@ def EnableUser(self, request, queryset):
     allusers = ', '.join(UsersList)
     messages.success(request,
                      "The users: " + allusers + " Enabled successfully.")
+
+
+# Creating admin task options as this will display(list_display) info in the admin panel
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ['connection_name', 'creation_date']
+    actions = [write_to_file]
+
+
+class TaskConfigureAdmin(admin.ModelAdmin):
+    list_display = [
+        'organization_name', 'organization_unit', 'common_name',
+        'email_address', 'expiration_period'
+    ]
+    actions = [write_configuration_to_file]
+
+
+class TaskConfigureRoot(admin.ModelAdmin):
+    list_display = [
+        'cert_name', 'cert_password'
+    ]
+    actions = [generate_root_certificate]
 
 
 # Define an inline admin descriptor for UserDetail model, this is displaying a model(GenerateCertificates) into default user model
@@ -344,6 +380,7 @@ admin.site.register(GenerateCertificate, UserAdmin)
 
 # For VPN's and Cert generations
 admin.site.register(User, UserAuthAdmin)
+admin.site.register(GenerateRootCertificate, TaskConfigureRoot)
 admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
-admin.site.register(subnettosubnet, TaskAdmin)
-admin.site.register(Vpnforremotehost, TaskAdmin)
+admin.site.register(SubnetToSubnet, TaskAdmin)
+admin.site.register(VpnForRemoteHost, TaskAdmin)

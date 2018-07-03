@@ -20,7 +20,7 @@ from django.core.validators import MaxValueValidator
 """
 
 
-class subnettosubnet(models.Model):
+class SubnetToSubnet(models.Model):
     connection_name = models.CharField(
         max_length=20,
         default='',
@@ -74,7 +74,7 @@ class subnettosubnet(models.Model):
 """
 
 
-class Vpnforremotehost(models.Model):
+class VpnForRemoteHost(models.Model):
     connection_name = models.CharField(
         max_length=20,
         default='',
@@ -266,3 +266,25 @@ class CertificateConfiguration(models.Model):
 
     def __str__(self):
         return self.organization_name
+
+
+""" Model for certificate generation, will be used to update token/cert_password values
+"""
+
+
+class GenerateRootCertificate(models.Model):
+
+    cert_name = models.CharField(
+        max_length=20,
+        default='ca.key.pem',
+        blank=False,
+        help_text="Certificate name - Do Not Change.")
+    cert_password = models.CharField(
+        max_length=20,
+        default='',
+        blank=True,
+        help_text="<b><a>Enter the Certificate password</a></b>")
+
+    def __str__(self):
+        return self.cert_name
+
