@@ -5,7 +5,8 @@ libreswan_managing_interface/database.cnf
 .idea/workspace.xml
 temp_cert/*
 certs/*
-config/*
+config/private/*
+config/default_certificate.conf
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
