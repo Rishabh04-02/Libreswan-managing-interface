@@ -289,6 +289,23 @@ class GeneratePrivateKey(models.Model):
         return self.key_name
 
 
+
+""" Model for saving the latest saved key password, This will be used while signing the certificates.
+"""
+
+
+class LatestSavedKeyPassword(models.Model):
+
+    key_password = models.CharField(
+        max_length=20,
+        default='',
+        blank=True,
+        help_text="<b><a>System Generated, Do Not Alter</a></b>")
+
+    def __str__(self):
+        return self.key_password    
+
+
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
 """
 

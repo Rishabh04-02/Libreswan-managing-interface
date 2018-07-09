@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate
+from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate, LatestSavedKeyPassword
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -172,10 +172,11 @@ def gen_temp_keys(keyname, certname, username):
     if CommonName.strip('\n') == "user":
         CommonName = username
 
+
+    #Generate the key for the user, to be used to generate user certificate    
     cmd = [
         'openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout',
-        tempdirname + keyname, '-x509', '-days', ExpirationPeriod, '-out',
-        tempdirname + certname
+        tempdirname + keyname + '.pem', '-days', ExpirationPeriod
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     # writing the values to PIPE
@@ -186,21 +187,52 @@ def gen_temp_keys(keyname, certname, username):
     r.stdin.write(OrgUnit.encode())
     r.stdin.write(CommonName.encode())
     r.stdin.write(EmailAddress.encode())
+    r.stdin.write(EmailAddress.encode())
+    r.stdin.write(OrgName.encode())
     # getting the output/errors
     out, err = r.communicate('\n'.encode())
     r.stdin.close()
-    os.chmod(tempdirname + keyname, 0o400)
+
+    #Generating a Certificate Signing Request from the above obtained key, to be used to sign the certificate with the CA key
+    cmd = [
+        'openssl', 'req', '-out', tempdirname + keyname + '.csr', '-key', tempdirname + keyname + '.pem', '-new', '-days',ExpirationPeriod
+    ]
+    r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+    # writing the values to PIPE
+    r.stdin.write(CountryName.encode())
+    r.stdin.write(StateProvince.encode())
+    r.stdin.write(LocalityName.encode())
+    r.stdin.write(OrgName.encode())
+    r.stdin.write(OrgUnit.encode())
+    r.stdin.write(CommonName.encode())
+    r.stdin.write(EmailAddress.encode())
+    r.stdin.write(EmailAddress.encode())
+    r.stdin.write(OrgName.encode())
+    # getting the output/errors
+    out, err = r.communicate('\n'.encode())
+    r.stdin.close()
+
+    #signing the key with root cert, so as all the keys and .p12 files become signed by a CA
+    cmd = [
+        'openssl', 'ca', '-batch', '-create_serial', '-config', configdirname + 'openssl.cnf', '-cert', configdirname + 'private/ca.root.pem', '-keyfile', configdirname + 'private/ca.key.pem', '-passin', 'pass:thsjfasdfljkasdffasf', '-in', tempdirname + keyname + '.csr', '-out', tempdirname + certname
+    ]
+    r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+    out, err = r.communicate('\n'.encode())
+    r.stdin.close()
+
+    os.chmod(tempdirname + keyname + '.pem', 0o400)
 
 
 # Generate .p12 certificates, will be used to establish connection
 def gen_p12_cert(keyname, certname, password, username):
     cmd = [
-        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname,
+        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname + '.pem',
         '-in', tempdirname + certname, '-export', '-out',
         dirname + username + '.p12', '-password', 'pass:' + password
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
+    
     os.chmod(dirname + username + '.p12', 0o400)
 
 
@@ -228,13 +260,13 @@ def generate_user_certificate(self, request, queryset):
     # For each qs in queryset generate the certificates. Taking input username, it'll be the name of the final generated certificate
     for qs in queryset:
         username = str(qs.username)
-        keyname = random_name(10, '.pem')
+        keyname = random_name(10, '')
         certname = random_name(10, '.pem')
         gen_temp_keys(keyname, certname, username)
         password = random_name(20, '')
         gen_p12_cert(keyname, certname, password, username)
-        #dlt_temp_cert(keyname)
-        dlt_temp_cert(certname)
+        dlt_temp_cert(keyname + '.pem')
+        dlt_temp_cert(keyname + '.csr')
 
         GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
@@ -275,6 +307,10 @@ def save_key_as_private_key(self, request, queryset):
         # getting the output/errors
         out, err = r.communicate('\n'.encode())
         r.stdin.close()
+
+        #saving the private key password to database, so that it can be used while signing the certificates
+        """     UNDER UPDATION    """
+
         os.chmod(configdirname + 'private/ca.key.pem', 0o400)
 
     messages.success(request, "Key successfully saved as private key.")
@@ -284,7 +320,7 @@ def generate_root_certificate(self, request, queryset):
 
     # Creating directory for saving certificates
     if (os.path.isdir(configdirname + 'private/') != True):
-        os.makedirs(configdirname + 'private/', 0o755, True)
+        os.makedirs(configdirname + 'private/', 0o700, True)
 
         # Success message on folder creation
         messages.success(
@@ -340,6 +376,7 @@ def generate_root_certificate(self, request, queryset):
         # getting the output/errors
         out, err = r.communicate('\n'.encode())
         r.stdin.close()
+
         os.chmod(configdirname + 'private/ca.root.pem', 0o400)
         os.remove(configdirname + 'private/root_certificate.conf')
 
