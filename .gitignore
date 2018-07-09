@@ -7,6 +7,10 @@ temp_cert/*
 certs/*
 config/private/*
 config/default_certificate.conf
+config/index.txt.attr
+config/index.txt.attr.old
+config/index.txt.old
+config/serial.old
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
