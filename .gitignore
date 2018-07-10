@@ -10,6 +10,7 @@ config/default_certificate.conf
 config/index.txt.attr
 config/index.txt.attr.old
 config/index.txt.old
+config/index.txt.new
 config/serial.old
 
 ### Python ###

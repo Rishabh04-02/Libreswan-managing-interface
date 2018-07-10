@@ -293,7 +293,6 @@ class GeneratePrivateKey(models.Model):
         return self.key_name
 
 
-
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
 """
 
@@ -341,11 +340,6 @@ class GenerateRootCertificate(models.Model):
         default='365',
         blank=False,
         help_text="Certificate Expiration period in days, value <= 9999")
-    password = models.CharField(
-        max_length=30,
-        default='gxpu08tkkmvhs1vm3gi88tkkmvhs1',
-        blank=False,
-        help_text="Enter the Private key password.")
 
     def __str__(self):
         return self.organization_name

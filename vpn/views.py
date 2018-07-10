@@ -32,7 +32,7 @@ def activate_account(request):
             'vpn/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(userid)),
+                'uid': urlsafe_base64_encode(force_bytes(userid)).decode(),
                 'token': account_activation_token.make_token(user),
             })
         emailto = User.objects.get(username=user).email
@@ -57,7 +57,7 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         # Creating entry to profile.email_verified, as to fetch and display it to the admin.
-        UserProfile.objects.create(username_id = uid, email_verified=True)
+        UserProfile.objects.create(username_id=uid, email_verified=True)
         user.save()
         return HttpResponse(
             '<center>Thank you for your email confirmation. Now you can login your account.</center>'

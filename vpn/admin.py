@@ -214,7 +214,7 @@ def gen_temp_keys(keyname, certname, username):
     PassFile = open(configdirname + 'private/temporary-file.txt', 'r')
     FileContent = PassFile.readlines()
     KeyFinalPassword = FileContent[0]
-    print(KeyFinalPassword, " - this is the password")
+
     #signing the key with root cert, so as all the keys and .p12 files become signed by a CA
     cmd = [
         'openssl', 'ca', '-batch', '-create_serial', '-config',
@@ -274,8 +274,8 @@ def generate_user_certificate(self, request, queryset):
         gen_temp_keys(keyname, certname, username)
         password = random_name(20, '')
         gen_p12_cert(keyname, certname, password, username)
+        dlt_temp_cert(certname)
         dlt_temp_cert(keyname + '.pem')
-        dlt_temp_cert(keyname + '.csr')
 
         GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
@@ -344,7 +344,10 @@ def generate_root_certificate(self, request, queryset):
 
     for qs in queryset:
         qs.expiration_period = str(qs.expiration_period)
-        SetPassword = qs.password
+        PassFile = open(configdirname + 'private/temporary-file.txt', 'r')
+        FileContent = PassFile.readlines()
+        SetPassword = FileContent[0]
+
         list_values = [
             'expiration_period', 'country_name', 'state_province',
             'locality_name', 'organization_name', 'organization_unit',
