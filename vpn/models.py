@@ -252,12 +252,16 @@ class CertificateConfiguration(models.Model):
         max_length=20,
         default='user',
         blank=False,
-        help_text="Enter Common Name (eg, your name or your server's hostname), user will write the username of user.")
+        help_text=
+        "Enter Common Name (eg, your name or your server's hostname), user will write the username of user."
+    )
     email_address = models.CharField(
         max_length=30,
         default='@email.com',
         blank=False,
-        help_text="It will be shown as username@email.com, if common name is user. else it will be shown as @email.com")
+        help_text=
+        "It will be shown as username@email.com, if common name is user. else it will be shown as @email.com"
+    )
     expiration_period = models.PositiveIntegerField(
         validators=[MaxValueValidator(9999)],
         default='365',
@@ -288,22 +292,6 @@ class GeneratePrivateKey(models.Model):
     def __str__(self):
         return self.key_name
 
-
-
-""" Model for saving the latest saved key password, This will be used while signing the certificates.
-"""
-
-
-class LatestSavedKeyPassword(models.Model):
-
-    key_password = models.CharField(
-        max_length=20,
-        default='',
-        blank=True,
-        help_text="<b><a>System Generated, Do Not Alter</a></b>")
-
-    def __str__(self):
-        return self.key_password    
 
 
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
@@ -341,7 +329,8 @@ class GenerateRootCertificate(models.Model):
         max_length=20,
         default='user',
         blank=False,
-        help_text="Enter Common Name (eg, your name or your server's hostname).")
+        help_text="Enter Common Name (eg, your name or your server's hostname)."
+    )
     email_address = models.CharField(
         max_length=30,
         default='@email.com',
@@ -356,9 +345,7 @@ class GenerateRootCertificate(models.Model):
         max_length=30,
         default='gxpu08tkkmvhs1vm3gi88tkkmvhs1',
         blank=False,
-        help_text="Enter the Private key password."
-        )
+        help_text="Enter the Private key password.")
 
     def __str__(self):
         return self.organization_name
-

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate, LatestSavedKeyPassword
+from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -123,8 +123,6 @@ def write_configuration_to_file(modeladmin, request, queryset):
 
 
 write_configuration_to_file.short_description = "Save Configuration as Default configuration"
-
-
 """ Check if folder exists/create folder for storing the certificates
     this function is checking if the temporary and the final certificates holding dierctories exists
 """
@@ -172,8 +170,7 @@ def gen_temp_keys(keyname, certname, username):
     if CommonName.strip('\n') == "user":
         CommonName = username
 
-
-    #Generate the key for the user, to be used to generate user certificate    
+    #Generate the key for the user, to be used to generate user certificate
     cmd = [
         'openssl', 'req', '-newkey', 'rsa:2048', '-nodes', '-keyout',
         tempdirname + keyname + '.pem', '-days', ExpirationPeriod
@@ -195,7 +192,8 @@ def gen_temp_keys(keyname, certname, username):
 
     #Generating a Certificate Signing Request from the above obtained key, to be used to sign the certificate with the CA key
     cmd = [
-        'openssl', 'req', '-out', tempdirname + keyname + '.csr', '-key', tempdirname + keyname + '.pem', '-new', '-days',ExpirationPeriod
+        'openssl', 'req', '-out', tempdirname + keyname + '.csr', '-key',
+        tempdirname + keyname + '.pem', '-new', '-days', ExpirationPeriod
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     # writing the values to PIPE
@@ -212,9 +210,19 @@ def gen_temp_keys(keyname, certname, username):
     out, err = r.communicate('\n'.encode())
     r.stdin.close()
 
+    #getting the ca key password, to sign the certs - TEMPORARY SOLUTION - WILL SOON BE UPDATED
+    PassFile = open(configdirname + 'private/temporary-file.txt', 'r')
+    FileContent = PassFile.readlines()
+    KeyFinalPassword = FileContent[0]
+    print(KeyFinalPassword, " - this is the password")
     #signing the key with root cert, so as all the keys and .p12 files become signed by a CA
     cmd = [
-        'openssl', 'ca', '-batch', '-create_serial', '-config', configdirname + 'openssl.cnf', '-cert', configdirname + 'private/ca.root.pem', '-keyfile', configdirname + 'private/ca.key.pem', '-passin', 'pass:thsjfasdfljkasdffasf', '-in', tempdirname + keyname + '.csr', '-out', tempdirname + certname
+        'openssl', 'ca', '-batch', '-create_serial', '-config',
+        configdirname + 'openssl.cnf', '-cert',
+        configdirname + 'private/ca.root.pem', '-keyfile',
+        configdirname + 'private/ca.key.pem', '-passin',
+        'pass:' + KeyFinalPassword, '-in', tempdirname + keyname + '.csr',
+        '-out', tempdirname + certname
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     out, err = r.communicate('\n'.encode())
@@ -226,13 +234,14 @@ def gen_temp_keys(keyname, certname, username):
 # Generate .p12 certificates, will be used to establish connection
 def gen_p12_cert(keyname, certname, password, username):
     cmd = [
-        'openssl', 'pkcs12', '-name', username, '-inkey', tempdirname + keyname + '.pem',
-        '-in', tempdirname + certname, '-export', '-out',
-        dirname + username + '.p12', '-password', 'pass:' + password
+        'openssl', 'pkcs12', '-name', username, '-inkey',
+        tempdirname + keyname + '.pem', '-in', tempdirname + certname,
+        '-export', '-out', dirname + username + '.p12', '-password',
+        'pass:' + password
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
-    
+
     os.chmod(dirname + username + '.p12', 0o400)
 
 
@@ -309,8 +318,13 @@ def save_key_as_private_key(self, request, queryset):
         r.stdin.close()
 
         #saving the private key password to database, so that it can be used while signing the certificates
-        """     UNDER UPDATION    """
+        """     TEMPERORARY SOLUTION - WILL SOON BE UPDATED WITH A MORE SECURE WAY    """
+        file = configdirname + "/private/temporary-file.txt"
+        f = open(file, 'w+')
+        f.write(KeyPassword)
+        f.close()
 
+        os.chmod(configdirname + 'private/temporary-file.txt', 0o400)
         os.chmod(configdirname + 'private/ca.key.pem', 0o400)
 
     messages.success(request, "Key successfully saved as private key.")
@@ -383,8 +397,6 @@ def generate_root_certificate(self, request, queryset):
     messages.success(request, "Root certificate successfully generated.")
 
 
-    
-
 # Disable user function, this is being used to disable user profile. So, as to prevent user login into this portal
 def DisableUser(self, request, queryset):
     UsersList = []
@@ -430,9 +442,7 @@ class TaskConfigureAdmin(admin.ModelAdmin):
 
 
 class TaskConfigureRoot(admin.ModelAdmin):
-    list_display = [
-        'key_name', 'key_password'
-    ]
+    list_display = ['key_name', 'key_password']
     actions = [save_key_as_private_key]
 
 
