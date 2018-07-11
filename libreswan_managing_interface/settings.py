@@ -78,7 +78,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': '/var/www/html/libreswan/libreswan_managing_interface/database.cnf',
+            'read_default_file': 'libreswan_managing_interface/database.cnf',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
