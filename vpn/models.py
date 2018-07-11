@@ -326,18 +326,18 @@ class GenerateRootCertificate(models.Model):
         help_text="Enter Organization unit name (eg. section name)")
     common_name = models.CharField(
         max_length=20,
-        default='user',
+        default='Libreswan.org',
         blank=False,
         help_text="Enter Common Name (eg, your name or your server's hostname)."
     )
     email_address = models.CharField(
         max_length=30,
-        default='@email.com',
+        default='support@libreswan.org',
         blank=False,
         help_text="Enter email address")
     expiration_period = models.PositiveIntegerField(
         validators=[MaxValueValidator(9999)],
-        default='365',
+        default='665',
         blank=False,
         help_text="Certificate Expiration period in days, value <= 9999")
 

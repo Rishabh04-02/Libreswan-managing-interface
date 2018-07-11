@@ -7,14 +7,14 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 2) Python 3.5 [Download](https://www.python.org/downloads/)
 
-	Version check:	$	python3 -V
-	Output format:	Python 3.5.4
+>	Version check:	$	python3 -V
+>	Output format:	Python 3.5.4
 
 
 3) pip3 [Install pip with Python3](https://stackoverflow.com/questions/6587507/how-to-install-pip-with-python-3)
 
-	Version check:	$	pip3 -V
-	Output format:	pip 10.0.1 from ..../lib/python3.5/site-packages/pip (python 3.5)
+>	Version check:	$	pip3 -V
+>	Output format:	pip 10.0.1 from ..../lib/python3.5/site-packages/pip (python 3.5)
 
 
 
@@ -130,7 +130,9 @@ The static files will be placed in a directory called static within the project 
 
 
 7) Running the app
-It can be run using the commands below:
+
+* If you want to generate VPN profile then follow the below instructions:
+
 
 		(librenv) user@host:$	sudo su
 		(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
@@ -140,9 +142,19 @@ Now on your browser navigate to - `http://your-server-ip:8000/`
 Your site will be running.
 Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates.
 
+* If you want to create certificates then follow the below instructions:
+It can be run using the commands below:
+
+		(librenv) user@host:$	sudo su
+		(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
+
+Now on your browser navigate to - `http://your-server-ip:8000/`
+
+Your site will be running.
+Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates. This issue will be fixed soon.
+
 8) Deactivate the environment
 
-		(librenv) root@host:$	exit
 		(librenv) user@host:$	deactivate
 
 

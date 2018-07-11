@@ -499,14 +499,13 @@ admin.site.site_header = 'Libreswan Administration'
     Displaying the models to admin
 """
 
-# For users
-admin.site.unregister(User)
-admin.site.register(GenerateCertificate, UserAdmin)
 
-# For VPN's and Cert generations
+admin.site.unregister(User)
+admin.site.register(SubnetToSubnet, TaskAdmin)
+admin.site.register(VpnForRemoteHost, TaskAdmin)
+
+admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
 admin.site.register(User, UserAuthAdmin)
 admin.site.register(GeneratePrivateKey, TaskConfigureRoot)
 admin.site.register(GenerateRootCertificate, TaskConfigureRootCert)
-admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
-admin.site.register(SubnetToSubnet, TaskAdmin)
-admin.site.register(VpnForRemoteHost, TaskAdmin)
+admin.site.register(GenerateCertificate, UserAdmin)
