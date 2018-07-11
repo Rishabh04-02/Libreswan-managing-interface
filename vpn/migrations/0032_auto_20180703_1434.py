@@ -17,9 +17,4 @@ class Migration(migrations.Migration):
             name='cert_name',
             field=models.CharField(default='ca.key.pem', help_text='Certificate name - Do Not Change.', max_length=20),
         ),
-        migrations.AlterField(
-            model_name='generaterootcertificate',
-            name=b'cert_password',
-            field=models.CharField(blank=True, default='', help_text='<b><a>Enter the Certificate password</a></b>', max_length=20),
-        ),
     ]

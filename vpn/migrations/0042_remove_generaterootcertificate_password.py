@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='generaterootcertificate',
-            name=b'password',
+            name='password',
         ),
     ]

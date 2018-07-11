@@ -116,7 +116,6 @@ In the `libreswan_managing_interface/settings.py` add your HOST_NAME to the foll
 
 * Migrating the databases using the management script using the command below:
 
-		(librenv) user@host:$	./manage.py makemigrations
 		(librenv) user@host:$	./manage.py migrate
 
 * Create an administrative user for the project by typing:
