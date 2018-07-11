@@ -10,37 +10,4 @@ Managing Interface for Libreswan VPN software.
 
 
 # Initial project setup/First time installation
-
-* Migrating the databases using the management script:
-
-```
-cd ~/libreswan_managing_interface
-./manage.py makemigrations
-./manage.py migrate
-```
-
-* Create an administrative user for the project by typing:
-
-```
-./manage.py createsuperuser
-```
-This will let you select a username, provide an email address, and choose and confirm a password.
-
-* Now collecting all of the static content into the directory location:
-
-```
-./manage.py collectstatic
-```
-The static files will be placed in a directory called static within the project directory.
-
-Testing the project by starting up the Django development server with this command:
-
-```
-sudo ./manage.py runserver 127.0.0.1:8000
-```
-Note - Use ``sudo`` before running server as it needs to write ``etc/conf.d/``  and will generate secured keys and certificates.
-
-In the web browser, visit the server's domain name or IP address followed by ``:8000``:
-```
-http://server_domain_or_IP:8000
-```
+Refer [INSTALLATION INSTRUCTIONS](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md)
