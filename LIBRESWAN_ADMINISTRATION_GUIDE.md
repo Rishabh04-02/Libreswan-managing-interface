@@ -1,3 +1,5 @@
+**Note** - Before Proceeding make sure you've read the [INSTALLATION INSTRUCTIONS](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md)
+
 # Libreswan Administration Guide
 This guide aims to improve user experience while using Libreswan Administration Interface.
 
