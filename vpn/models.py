@@ -293,6 +293,26 @@ class GeneratePrivateKey(models.Model):
         return self.key_name
 
 
+""" Model for storing privatekey password, will be used while signing the certificates.
+"""
+
+
+class PrivateKeyPassword(models.Model):
+
+    key_name = models.CharField(
+        primary_key=True,
+        max_length=20,
+        default='Private Key',
+        blank=False)
+    priv_key_password = models.CharField(
+        max_length=20,
+        default='',
+        blank=False)
+
+    def __str__(self):
+        return self.priv_key_password
+
+
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
 """
 

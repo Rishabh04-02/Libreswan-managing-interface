@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate
+from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate, PrivateKeyPassword
 """ OS imported to check and create dir
     subprocess imported to run commands through subprocess    
     String and random imported to generate random string
@@ -28,6 +28,7 @@ from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserP
 tempdirname = 'temp_cert/'
 dirname = 'certs/'
 configdirname = 'config/'
+PassKeyName = 'privatekey'
 """ write_to_file function -
     writing data to /etc/ipsec.d/connection_name.conf file so that the connection can be saved and loaded from the conf* directory without disturbing other connections
     Opening file in w+ mode, as it will create the file if it doesn't exist otherwise write it
@@ -210,10 +211,9 @@ def gen_temp_keys(keyname, certname, username):
     out, err = r.communicate('\n'.encode())
     r.stdin.close()
 
-    #getting the ca key password, to sign the certs - TEMPORARY SOLUTION - WILL SOON BE UPDATED
-    PassFile = open(configdirname + 'private/temporary-file.txt', 'r')
-    FileContent = PassFile.readlines()
-    KeyFinalPassword = FileContent[0]
+    #getting the ca key password, to sign the certs
+    KeyFinalPassword = PrivateKeyPassword.objects.get(key_name=PassKeyName)
+    KeyFinalPassword = KeyFinalPassword.priv_key_password
 
     #signing the key with root cert, so as all the keys and .p12 files become signed by a CA
     cmd = [
@@ -318,13 +318,9 @@ def save_key_as_private_key(self, request, queryset):
         r.stdin.close()
 
         #saving the private key password to database, so that it can be used while signing the certificates
-        """     TEMPERORARY SOLUTION - WILL SOON BE UPDATED WITH A MORE SECURE WAY    """
-        file = configdirname + "/private/temporary-file.txt"
-        f = open(file, 'w+')
-        f.write(KeyPassword)
-        f.close()
+        keypassword = PrivateKeyPassword(key_name=PassKeyName, priv_key_password=KeyPassword)
+        keypassword.save()
 
-        os.chmod(configdirname + 'private/temporary-file.txt', 0o400)
         os.chmod(configdirname + 'private/ca.key.pem', 0o400)
 
     messages.success(request, "Key successfully saved as private key.")
@@ -344,9 +340,8 @@ def generate_root_certificate(self, request, queryset):
 
     for qs in queryset:
         qs.expiration_period = str(qs.expiration_period)
-        PassFile = open(configdirname + 'private/temporary-file.txt', 'r')
-        FileContent = PassFile.readlines()
-        SetPassword = FileContent[0]
+        SetPassword = PrivateKeyPassword.objects.get(key_name=PassKeyName)
+        SetPassword = SetPassword.priv_key_password
 
         list_values = [
             'expiration_period', 'country_name', 'state_province',
