@@ -131,3 +131,5 @@ DEFAULT_FROM_EMAIL = 'noreply@libreswan.org'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
+MEDIA_URL = '/crl/'
+MEDIA_ROOT  = os.path.join(BASE_DIR, 'config/crl/')
