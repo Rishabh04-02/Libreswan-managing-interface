@@ -24,6 +24,7 @@ from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserP
 """ Defining global variables for using in multiple functions
     tempdirname - Temporary certificates holding directory name
     dirname - Final .p12 certificates holding directory name
+    PassKeyName - Name of the CA private key as stored in database
 """
 tempdirname = 'temp_cert/'
 dirname = 'certs/'
