@@ -18,10 +18,12 @@ private_key       = $dir/config/private/ca.key.pem
 certificate       = $dir/config/private/ca.root.pem
 
 # For certificate revocation lists.
-crlnumber         = $dir/config/crlnumber
+# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
+crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl.pem
+crlnumber         = $dir/config/crl/crlnumber
 crl               = $dir/config/crl/ca.crl.pem
 crl_extensions    = crl_ext
-default_crl_days  = 30
+default_crl_days  = 60
 
 # SHA-1 is deprecated, so use SHA-2 instead.
 default_md        = sha256
