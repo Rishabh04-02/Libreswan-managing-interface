@@ -13,6 +13,7 @@ config/index.txt.attr.old
 config/index.txt.old
 config/index.txt.new
 config/serial.old
+config/crl/*
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
