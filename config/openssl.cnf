@@ -18,8 +18,6 @@ private_key       = $dir/config/private/ca.key.pem
 certificate       = $dir/config/private/ca.root.pem
 
 # For certificate revocation lists.
-# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
-crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl.pem
 crlnumber         = $dir/config/crl/crlnumber
 crl               = $dir/config/crl/ca.crl.pem
 crl_extensions    = crl_ext
@@ -86,6 +84,8 @@ emailAddress_default            = trialemail@mail.com
 
 [ v3_ca ]
 # Extensions for a typical CA (`man x509v3_config`).
+# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
+crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer
 basicConstraints = critical, CA:true
@@ -100,11 +100,13 @@ keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 
 [ usr_cert ]
 # Extensions for client certificates (`man x509v3_config`).
-basicConstraints = CA:FALSE
+# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
+crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl
+basicConstraints = CA:TRUE
 nsCertType = client, email
-nsComment = "OpenSSL Generated Client Certificate"
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid,issuer
+nsComment = "OpenSSL Generated Client Certificate, Libreswan Managing Interface"
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
 keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
 extendedKeyUsage = clientAuth, emailProtection
 

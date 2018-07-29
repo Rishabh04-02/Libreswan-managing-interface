@@ -223,7 +223,7 @@ def gen_temp_keys(keyname, certname, username):
         configdirname + 'private/ca.root.pem', '-keyfile',
         configdirname + 'private/ca.key.pem', '-passin',
         'pass:' + KeyFinalPassword, '-in', tempdirname + keyname + '.csr',
-        '-out', tempdirname + certname
+        '-out', tempdirname + certname, '-extensions', 'usr_cert'
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     out, err = r.communicate('\n'.encode())
@@ -259,7 +259,7 @@ def dlt_temp_cert(filename):
    Step 1 [Generate random names for certs(public and private)] - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
    Step 2 [Generate private and public keys] - Generate intermediate certificates, these will be used to generate the final .p12 certs
    Step 3 [Create .p12 file using the above keys] - Generating the .p12 certificates, they are the final certs which will be used to establish connections
-   Step 4 [Delete the certificates generated in Step 2] - Delete the temporary certificates, as they were only required to generate .p12 (final) certs
+   Step 4 [Delete the certificate signing request generated in Step 2] - Delete the temporary CSR, as they were only required to sign the certificates.
    Step 5 [Save the information to database] - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
 """
 
@@ -275,8 +275,7 @@ def generate_user_certificate(self, request, queryset):
         gen_temp_keys(keyname, certname, username)
         password = random_name(20, '')
         gen_p12_cert(keyname, certname, password, username)
-        dlt_temp_cert(certname)
-        dlt_temp_cert(keyname + '.pem')
+        dlt_temp_cert(keyname + '.csr')
 
         GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
@@ -319,7 +318,8 @@ def save_key_as_private_key(self, request, queryset):
         r.stdin.close()
 
         #saving the private key password to database, so that it can be used while signing the certificates
-        keypassword = PrivateKeyPassword(key_name=PassKeyName, priv_key_password=KeyPassword)
+        keypassword = PrivateKeyPassword(
+            key_name=PassKeyName, priv_key_password=KeyPassword)
         keypassword.save()
 
         os.chmod(configdirname + 'private/ca.key.pem', 0o400)
@@ -375,7 +375,8 @@ def generate_root_certificate(self, request, queryset):
             'openssl', 'req', '-key', configdirname + 'private/ca.key.pem',
             '-passin', 'pass:' + SetPassword, '-new', '-x509', '-days',
             ExpirationPeriod, '-sha256', '-out',
-            configdirname + 'private/ca.root.pem'
+            configdirname + 'private/ca.root.pem', '-config',
+            configdirname + 'openssl.cnf'
         ]
         r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
         # writing the values to PIPE
@@ -494,7 +495,6 @@ admin.site.site_header = 'Libreswan Administration'
 """
     Displaying the models to admin
 """
-
 
 admin.site.unregister(User)
 admin.site.register(SubnetToSubnet, TaskAdmin)
