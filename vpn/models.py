@@ -202,6 +202,11 @@ class UserProfile(models.Model):
 class GenerateCertificate(models.Model):
 
     username = models.OneToOneField(User, on_delete=models.CASCADE)
+    cert_name = models.CharField(
+        max_length=15,
+        default='',
+        blank=True,
+        help_text="<b><a>System Generated - Do not alter</a></b>")
     cert_password = models.CharField(
         max_length=20,
         default='',

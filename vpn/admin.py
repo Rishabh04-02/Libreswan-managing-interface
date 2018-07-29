@@ -278,6 +278,8 @@ def generate_user_certificate(self, request, queryset):
         dlt_temp_cert(keyname + '.csr')
 
         GenerateCertificate.objects.filter(username__username=username).update(
+            cert_name=certname)
+        GenerateCertificate.objects.filter(username__username=username).update(
             cert_password=password)
         GenerateCertificate.objects.filter(username__username=username).update(
             key_name=keyname)
@@ -478,7 +480,7 @@ class UserAuthAdmin(BaseUserAdmin):
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email_verified', 'cert_password', 'key_name']
+    list_display = ['username', 'email_verified', 'cert_name', 'cert_password', 'key_name']
 
     # Fetching the email_verified field from UserProfile Model for accessibility
     def email_verified(self, obj):
