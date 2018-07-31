@@ -189,6 +189,7 @@ class UserProfile(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
     email_verified = models.BooleanField(
         default=False,
+        editable=False,
         help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
 
     def __unicode__(self):
@@ -223,6 +224,19 @@ class GenerateCertificate(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(username=instance)
+        GenerateCertificate.objects.create(username=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()
+    instance.generatecertificate.save()
 
 
 """ Model for writing certificate configuration to a file, the configuration will be loaded from a file while generatig certificates.
