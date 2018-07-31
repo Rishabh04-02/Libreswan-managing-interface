@@ -56,9 +56,8 @@ def activate(request, uidb64, token):
 
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
-        # Creating entry to profile.email_verified, as to fetch and display it to the admin.
-        UserProfile.objects.create(username_id=uid, email_verified=True)
-        user.save()
+        # Creating/Updating entry to profile.email_verified, as to fetch and display it to the admin. Updating it as when user visits the same link more than once then it gives an error, so as to remove that error just added Update option along with Insert values.
+        UserProfile.objects.filter(username_id=uid).update(email_verified=True)
         return HttpResponse(
             '<center>Thank you for your email confirmation. Now you can login your account.</center>'
         )

@@ -206,16 +206,19 @@ class GenerateCertificate(models.Model):
         max_length=15,
         default='',
         blank=True,
+        editable=False,
         help_text="<b><a>System Generated - Do not alter</a></b>")
     cert_password = models.CharField(
         max_length=20,
         default='',
         blank=True,
+        editable=False,
         help_text="<b><a>System Generated - Do not alter</a></b>")
     key_name = models.CharField(
         max_length=15,
         default='',
         blank=True,
+        editable=False,
         help_text="<b><a>System Generated - Do not alter</a></b>")
 
     def __unicode__(self):
