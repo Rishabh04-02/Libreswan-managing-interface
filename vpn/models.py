@@ -231,12 +231,8 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(username=instance)
         GenerateCertificate.objects.create(username=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
-    instance.generatecertificate.save()
+        instance.userprofile.save() 
+        instance.generatecertificate.save()
 
 
 """ Model for writing certificate configuration to a file, the configuration will be loaded from a file while generatig certificates.
