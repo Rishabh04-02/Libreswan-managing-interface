@@ -294,6 +294,29 @@ def generate_user_certificate(self, request, queryset):
         "Certificates for users: " + allusers + " generated successfully.")
 
 
+def revoke_user_certificate(self, request, queryset):
+
+    UsersList = []
+    for qs in queryset:
+        #query content here
+        """ How this thing will work:
+            1) Get user details from the query qs.details
+            2) revoke the certificate using the openssl command `openssl ca -config intermediate/openssl.cnf -revoke intermediate/certs/bob@example.com.cert.pem`
+            3) once certificate is revoked check for directory and create it `config/crl`
+            4) once directory is created recreate the distribution list `openssl ca -config intermediate/openssl.cnf -gencrl -out intermediate/crl/intermediate.crl.pem`
+            5) exit
+        """
+        username = str(qs.username)
+        UsersList.append(username)
+
+    allusers = ', '.join(UsersList)
+    messages.success(
+        request,
+        "Certificates for users: " + allusers + " revoked successfully.")
+
+        
+
+
 def save_key_as_private_key(self, request, queryset):
 
     # Creating directory for saving certificates
@@ -489,7 +512,7 @@ class UserAdmin(admin.ModelAdmin):
     # Using boolean field for convenience
     email_verified.boolean = True
 
-    actions = [generate_user_certificate]
+    actions = [generate_user_certificate,revoke_user_certificate]
 
 
 # Changing Admin header text, this is done to customize the Admin interface

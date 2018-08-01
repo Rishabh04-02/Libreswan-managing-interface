@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.utils.encoding import force_bytes
@@ -66,6 +67,10 @@ class SubnetToSubnet(models.Model):
 
     def __str__(self):
         return self.connection_name
+
+    class Meta:
+        verbose_name = _("02. Subnet to Subnet Conection")
+        verbose_name_plural = _("02. Subnet to Subnet Connections")
 
 
 """ Vpn for remote hosts Model for storing values to CONNECTION_NAME.conf
@@ -180,6 +185,10 @@ class VpnForRemoteHost(models.Model):
     def __str__(self):
         return self.connection_name
 
+    class Meta:
+        verbose_name = _("01. VPN for Remote Host")
+        verbose_name_plural = _("01. VPN for Remote Hosts")
+
 
 """ Model for User Profile creation, will be used to store some values regarding certificate generation, email verifications etc.
 """
@@ -224,6 +233,10 @@ class GenerateCertificate(models.Model):
 
     def __unicode__(self):
         return unicode(self.username)
+
+    class Meta:
+        verbose_name = _("4. Generate OR Revoke User Certificate")
+        verbose_name_plural = _("4. Generate OR Revoke User Certificates")
 
 
 @receiver(post_save, sender=User)
@@ -289,6 +302,10 @@ class CertificateConfiguration(models.Model):
     def __str__(self):
         return self.organization_name
 
+    class Meta:
+        verbose_name = _("3. User Certificate configuration options")
+        verbose_name_plural = _("3. User Certificate configuration options")
+
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
@@ -309,6 +326,10 @@ class GeneratePrivateKey(models.Model):
 
     def __str__(self):
         return self.key_name
+
+    class Meta:
+        verbose_name = _("1. Generate CA Private Key")
+        verbose_name_plural = _("1. Generate CA Private Key")
 
 
 """ Model for storing privatekey password, will be used while signing the certificates.
@@ -381,3 +402,7 @@ class GenerateRootCertificate(models.Model):
 
     def __str__(self):
         return self.organization_name
+
+    class Meta:
+        verbose_name = _("2. Generate CA Root Certificate")
+        verbose_name_plural = _("2. Generate CA Root Certificate")
