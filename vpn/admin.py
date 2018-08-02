@@ -272,6 +272,11 @@ def generate_user_certificate(self, request, queryset):
             cert_password=password)
         GenerateCertificate.objects.filter(username__username=username).update(
             key_name=keyname)
+        #fetching the userid from the User model, to update the certificate_revocation value
+        userid = User.objects.get(username=username)
+        userid = userid.id
+        #Updating the certificate_revocation value in database
+        UserProfile.objects.filter(username_id=userid).update(certificate_revoked=False)
 
         # Adding user to the userslist, So as to give a single success notification/prompt for all connections
         UsersList.append(username)
@@ -296,6 +301,8 @@ def revoke_user_certificate(self, request, queryset):
     for qs in queryset:
         username = str(qs.username)
         certname = str(qs.cert_name)
+
+        #fetching the private key password, will be used while certificate revocation
         KeyPassword = PrivateKeyPassword.objects.get()
         KeyPassword = KeyPassword.priv_key_password
 
@@ -306,7 +313,12 @@ def revoke_user_certificate(self, request, queryset):
         r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
         out, err = r.communicate('\n'.encode())
 
-        
+        #fetching the userid from the User model, to update the certificate_revocation value
+        userid = User.objects.get(username=username)
+        userid = userid.id
+        #Updating the certificate_revocation value in database
+        UserProfile.objects.filter(username_id=userid).update(certificate_revoked=True)
+
         UsersList.append(username)
 
     allusers = ', '.join(UsersList)
@@ -504,14 +516,20 @@ class UserAuthAdmin(BaseUserAdmin):
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email_verified', 'cert_name', 'cert_password', 'key_name']
+    list_display = ['username', 'email_verified','certificate_revoked', 'cert_name', 'cert_password', 'key_name']
 
     # Fetching the email_verified field from UserProfile Model for accessibility
     def email_verified(self, obj):
         return obj.username.userprofile.email_verified
 
-    # Using boolean field for convenience
+
+    # Fetching the certificate_revoked field from UserProfile Model for accessibility
+    def certificate_revoked(self, obj):
+        return obj.username.userprofile.certificate_revoked    
+
+    # Using boolean fields for convenience
     email_verified.boolean = True
+    certificate_revoked.boolean = True
 
     actions = [generate_user_certificate,revoke_user_certificate]
 

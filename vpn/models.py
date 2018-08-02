@@ -194,6 +194,9 @@ class UserProfile(models.Model):
         default=False,
         editable=False,
         help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
+    certificate_revoked = models.BooleanField(
+        default=False,
+        editable=False)
 
     def __unicode__(self):
         return unicode(self.username)
