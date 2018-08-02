@@ -14,12 +14,12 @@ serial            = $dir/serial
 RANDFILE          = .rand
 
 # The root key and root certificate.
-private_key       = $dir/config/private/ca.key.pem
-certificate       = $dir/config/private/ca.root.pem
+private_key       = $dir/private/ca.key.pem
+certificate       = $dir/private/ca.root.pem
 
 # For certificate revocation lists.
-crlnumber         = $dir/config/crl/crlnumber
-crl               = $dir/config/crl/ca.crl.pem
+crlnumber         = $dir/crl/crlnumber
+crl               = $dir/crl/ca.crl.pem
 crl_extensions    = crl_ext
 default_crl_days  = 60
 
@@ -102,7 +102,7 @@ keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 # Extensions for client certificates (`man x509v3_config`).
 # crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
 crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl
-basicConstraints = CA:TRUE
+basicConstraints = CA:FALSE
 nsCertType = client, email
 nsComment = "OpenSSL Generated Client Certificate, Libreswan Managing Interface"
 subjectKeyIdentifier=hash

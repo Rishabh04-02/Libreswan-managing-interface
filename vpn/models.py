@@ -19,8 +19,6 @@ from django.core.validators import MaxValueValidator
     The connection will be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
     ipsec auto --start <connname> will be used to start connection in case of subnet to subnet (lan to lan) connections
 """
-
-
 class SubnetToSubnet(models.Model):
     connection_name = models.CharField(
         max_length=20,
@@ -77,8 +75,6 @@ class SubnetToSubnet(models.Model):
     The connection will also be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
     ipsec auto --add <connname> will be used to add connection in this case 
 """
-
-
 class VpnForRemoteHost(models.Model):
     connection_name = models.CharField(
         max_length=20,
@@ -192,8 +188,6 @@ class VpnForRemoteHost(models.Model):
 
 """ Model for User Profile creation, will be used to store some values regarding certificate generation, email verifications etc.
 """
-
-
 class UserProfile(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
     email_verified = models.BooleanField(
@@ -207,8 +201,6 @@ class UserProfile(models.Model):
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
-
-
 class GenerateCertificate(models.Model):
 
     username = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -250,8 +242,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 """ Model for writing certificate configuration to a file, the configuration will be loaded from a file while generatig certificates.
 """
-
-
 class CertificateConfiguration(models.Model):
 
     country_name = models.CharField(
@@ -309,8 +299,6 @@ class CertificateConfiguration(models.Model):
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
-
-
 class GeneratePrivateKey(models.Model):
 
     key_name = models.CharField(
@@ -334,8 +322,6 @@ class GeneratePrivateKey(models.Model):
 
 """ Model for storing privatekey password, will be used while signing the certificates.
 """
-
-
 class PrivateKeyPassword(models.Model):
 
     key_name = models.CharField(
@@ -354,8 +340,6 @@ class PrivateKeyPassword(models.Model):
 
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
 """
-
-
 class GenerateRootCertificate(models.Model):
 
     country_name = models.CharField(

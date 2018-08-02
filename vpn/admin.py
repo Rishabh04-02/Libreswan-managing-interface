@@ -10,34 +10,28 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate, PrivateKeyPassword
-""" OS imported to check and create dir
-    subprocess imported to run commands through subprocess    
-    String and random imported to generate random string
-    Admin imported to access user submitted info for VPN models
-    User imported to add generate certificate options to admin activity
-    BaseUserAdmin imported to view/save the contents to database after cert generation
-    Messages will be used to display the return status after execution
-    Models imported to save values to file and database
-"""
+
 
 # Register your models here.
+
 """ Defining global variables for using in multiple functions
     tempdirname - Temporary certificates holding directory name
     dirname - Final .p12 certificates holding directory name
+    configdirname - Directory holding configuration files
     PassKeyName - Name of the CA private key as stored in database
 """
 tempdirname = 'temp_cert/'
 dirname = 'certs/'
 configdirname = 'config/'
 PassKeyName = 'privatekey'
+
+
 """ write_to_file function -
-    writing data to /etc/ipsec.d/connection_name.conf file so that the connection can be saved and loaded from the conf* directory without disturbing other connections
+    writing data to /etc/ipsec.d/connection_name.conf file so that the connection can be saved and loaded from the /etc/ipsec.d/* directory without disturbing other connections
     Opening file in w+ mode, as it will create the file if it doesn't exist otherwise write it
     Checking If attribute exists and has a value, so as to avoid writing attributes with no value to the configuration file
     Writing to file the non empty attributes and their respective value
 """
-
-
 def write_to_file(modeladmin, request, queryset):
     ConnectionsList = []
     SubnetOrVpn = 0
@@ -88,10 +82,8 @@ def write_to_file(modeladmin, request, queryset):
     It writes the selected user configuration to the default configuration file,
     The values will be loaded from this file while generating the certificates.
     In this way user can create as many configurations as he wants and has the option to choose any configuration as default.
-    All the certificates generated will use that configuration.
+    All the certificates generated will use the saved(written to file) configuration.
 """
-
-
 def write_configuration_to_file(modeladmin, request, queryset):
 
     # Creating directory for saving certificates
@@ -125,11 +117,11 @@ def write_configuration_to_file(modeladmin, request, queryset):
 
 
 write_configuration_to_file.short_description = "Save Configuration as Default configuration"
+
+
 """ Check if folder exists/create folder for storing the certificates
     this function is checking if the temporary and the final certificates holding dierctories exists
 """
-
-
 def check_folders(request):
     if (os.path.isdir(tempdirname) != True):
         os.makedirs(tempdirname, 0o755, True)
@@ -192,7 +184,7 @@ def gen_temp_keys(keyname, certname, username):
     out, err = r.communicate('\n'.encode())
     r.stdin.close()
 
-    #Generating a Certificate Signing Request from the above obtained key, to be used to sign the certificate with the CA key
+    #Generating a Certificate Signing Request from the above obtained key, to be used to sign the CSR hence certificate with the CA key
     cmd = [
         'openssl', 'req', '-out', tempdirname + keyname + '.csr', '-key',
         tempdirname + keyname + '.pem', '-new', '-days', ExpirationPeriod
@@ -253,17 +245,14 @@ def dlt_temp_cert(filename):
     out, err = s.communicate('\n'.encode())
 
 
+""" Generate user certificate -
+    Steps for generating temporary/intermediate certificates:
+    Step 1 [Generate random names for certs(public and private)] - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
+    Step 2 [Generate private and public keys] - Generate intermediate certificates, these will be used to generate the final .p12 certs
+    Step 3 [Create .p12 file using the above keys] - Generating the .p12 certificates, they are the final certs which will be used to establish connections
+    Step 4 [Delete the certificate signing request generated in Step 2] - Delete the temporary CSR, as they were only required to sign the certificates.
+    Step 5 [Save the information to database] - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
 """
-   Generate user certificate -
-   Steps for generating temporary/intermediate certificates:
-   Step 1 [Generate random names for certs(public and private)] - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
-   Step 2 [Generate private and public keys] - Generate intermediate certificates, these will be used to generate the final .p12 certs
-   Step 3 [Create .p12 file using the above keys] - Generating the .p12 certificates, they are the final certs which will be used to establish connections
-   Step 4 [Delete the certificate signing request generated in Step 2] - Delete the temporary CSR, as they were only required to sign the certificates.
-   Step 5 [Save the information to database] - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
-"""
-
-
 def generate_user_certificate(self, request, queryset):
     check_folders(request)
     UsersList = []
@@ -294,19 +283,30 @@ def generate_user_certificate(self, request, queryset):
         "Certificates for users: " + allusers + " generated successfully.")
 
 
+""" Revoke user certificate -
+    Steps for revoking user certificates:
+    Step 1 - Get the username and the certname
+    Step 2 - Revoke the certificate using the command `openssl ca -config intermediate/openssl.cnf -revoke intermediate/certs/bob@example.com.cert.pem`
+    Step 3 - Once revocation completes create a dir if not already exists `config/crl`, this will save the `distribution.crl` list in it. The list is available on public IP at `http://HOSTNAME//crl/distripoint.crl`
+    Step 4 - Once the above directory is created recreate the CRL(certificate revocation list) using the command `openssl ca -config intermediate/openssl.cnf -gencrl -out intermediate/crl/intermediate.crl.pem`
+"""
 def revoke_user_certificate(self, request, queryset):
 
     UsersList = []
     for qs in queryset:
-        #query content here
-        """ How this thing will work:
-            1) Get user details from the query qs.details
-            2) revoke the certificate using the openssl command `openssl ca -config intermediate/openssl.cnf -revoke intermediate/certs/bob@example.com.cert.pem`
-            3) once certificate is revoked check for directory and create it `config/crl`
-            4) once directory is created recreate the distribution list `openssl ca -config intermediate/openssl.cnf -gencrl -out intermediate/crl/intermediate.crl.pem`
-            5) exit
-        """
         username = str(qs.username)
+        certname = str(qs.cert_name)
+        KeyPassword = PrivateKeyPassword.objects.get()
+        KeyPassword = KeyPassword.priv_key_password
+
+        #revoking the user certificate
+        cmd = [
+            'openssl', 'ca', '-config', configdirname + 'openssl.cnf', '-revoke', tempdirname + certname, '-passin','pass:' + KeyPassword
+        ]
+        r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+        out, err = r.communicate('\n'.encode())
+
+        
         UsersList.append(username)
 
     allusers = ', '.join(UsersList)
@@ -316,7 +316,7 @@ def revoke_user_certificate(self, request, queryset):
 
         
 
-
+# Save key as private function, creates and saves the CA private key
 def save_key_as_private_key(self, request, queryset):
 
     # Creating directory for saving certificates
@@ -352,6 +352,7 @@ def save_key_as_private_key(self, request, queryset):
     messages.success(request, "Key successfully saved as private key.")
 
 
+# Generate root certificate function, creates and saves the CA root certificate
 def generate_root_certificate(self, request, queryset):
 
     # Creating directory for saving certificates
@@ -517,14 +518,12 @@ class UserAdmin(admin.ModelAdmin):
 
 # Changing Admin header text, this is done to customize the Admin interface
 admin.site.site_header = 'Libreswan Administration'
-"""
-    Displaying the models to admin
-"""
 
+
+#Displaying the models to admin
 admin.site.unregister(User)
 admin.site.register(SubnetToSubnet, TaskAdmin)
 admin.site.register(VpnForRemoteHost, TaskAdmin)
-
 admin.site.register(CertificateConfiguration, TaskConfigureAdmin)
 admin.site.register(User, UserAuthAdmin)
 admin.site.register(GeneratePrivateKey, TaskConfigureRoot)
