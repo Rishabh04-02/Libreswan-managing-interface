@@ -18,11 +18,13 @@ from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserP
     tempdirname - Temporary certificates holding directory name
     dirname - Final .p12 certificates holding directory name
     configdirname - Directory holding configuration files
+    distributionlistdir - Directory for saving the distribution list CRL file
     PassKeyName - Name of the CA private key as stored in database
 """
 tempdirname = 'temp_cert/'
 dirname = 'certs/'
 configdirname = 'config/'
+distributionlistdir = configdirname + 'crl/'
 PassKeyName = 'privatekey'
 
 
@@ -123,20 +125,30 @@ write_configuration_to_file.short_description = "Save Configuration as Default c
     this function is checking if the temporary and the final certificates holding dierctories exists
 """
 def check_folders(request):
+    #for saving user certificates and keys (.pem & .csr files)
     if (os.path.isdir(tempdirname) != True):
         os.makedirs(tempdirname, 0o755, True)
 
         # Success message on folder creation
         messages.success(request,
-                         "Directory for saving temporary certificates: " +
+                         "Directory for saving user certificates and keys: " +
                          tempdirname + " created successfully.")
 
+    #for saving final .p12 certificates
     if (os.path.isdir(dirname) != True):
         os.makedirs(dirname, 0o755, True)
 
         # Success message on folder creation
         messages.success(request, "Directory for saving .p12 certificates: " +
                          dirname + " created successfully.")
+
+    #for saving the distribution list (.crl) file
+    if (os.path.isdir(distributionlistdir) != True):
+        os.makedirs(distributionlistdir, 0o755, True)
+
+        # Success message on folder creation
+        messages.success(request, "Directory for saving distribution list " +
+                         distributionlistdir + " created successfully.")
 
 
 # Generate random name, will be used to assign name to cert and keys
@@ -322,10 +334,23 @@ def revoke_user_certificate(self, request, queryset):
         UsersList.append(username)
 
     allusers = ', '.join(UsersList)
+    
+    #displaying the success message to admin
     messages.success(
         request,
         "Certificates for users: " + allusers + " revoked successfully.")
 
+    #recreating the certificate revocation list after each certificate revocation
+    cmd = [
+        'openssl', 'ca', '-config', configdirname + 'openssl.cnf', '-gencrl', '-out', distributionlistdir + 'distripoint.crl', '-passin','pass:' + KeyPassword
+    ]
+    r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
+    out, err = r.communicate('\n'.encode())
+
+    #displaying the success message to admin
+    messages.success(
+        request,
+        "Certificate revocation list updated successfully.")
         
 
 # Save key as private function, creates and saves the CA private key
