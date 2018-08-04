@@ -3,7 +3,6 @@ libreswanenv
 librenv
 libreswan_managing_interface/database.cnf
 .idea/
-.idea/*
 temp_cert/*
 certs/*
 config/private/*

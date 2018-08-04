@@ -11,9 +11,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserProfile, CertificateConfiguration, GeneratePrivateKey, GenerateRootCertificate, PrivateKeyPassword
 
-
 # Register your models here.
-
 """ Defining global variables for using in multiple functions
     tempdirname - Temporary certificates holding directory name
     dirname - Final .p12 certificates holding directory name
@@ -21,6 +19,8 @@ from .models import SubnetToSubnet, VpnForRemoteHost, GenerateCertificate, UserP
     distributionlistdir - Directory for saving the distribution list CRL file
     PassKeyName - Name of the CA private key as stored in database
 """
+
+
 tempdirname = 'temp_cert/'
 dirname = 'certs/'
 configdirname = 'config/'
@@ -34,6 +34,8 @@ PassKeyName = 'privatekey'
     Checking If attribute exists and has a value, so as to avoid writing attributes with no value to the configuration file
     Writing to file the non empty attributes and their respective value
 """
+
+
 def write_to_file(modeladmin, request, queryset):
     ConnectionsList = []
     SubnetOrVpn = 0
@@ -86,6 +88,8 @@ def write_to_file(modeladmin, request, queryset):
     In this way user can create as many configurations as he wants and has the option to choose any configuration as default.
     All the certificates generated will use the saved(written to file) configuration.
 """
+
+
 def write_configuration_to_file(modeladmin, request, queryset):
 
     # Creating directory for saving certificates
@@ -124,6 +128,8 @@ write_configuration_to_file.short_description = "Save Configuration as Default c
 """ Check if folder exists/create folder for storing the certificates
     this function is checking if the temporary and the final certificates holding dierctories exists
 """
+
+
 def check_folders(request):
     #for saving user certificates and keys (.pem & .csr files)
     if (os.path.isdir(tempdirname) != True):
@@ -265,6 +271,8 @@ def dlt_temp_cert(filename):
     Step 4 [Delete the certificate signing request generated in Step 2] - Delete the temporary CSR, as they were only required to sign the certificates.
     Step 5 [Save the information to database] - Save/Update the password of certificates in/to database, as it'll be shown to user after his successfull login into the portal
 """
+
+
 def generate_user_certificate(self, request, queryset):
     check_folders(request)
     UsersList = []
@@ -288,7 +296,8 @@ def generate_user_certificate(self, request, queryset):
         userid = User.objects.get(username=username)
         userid = userid.id
         #Updating the certificate_revocation value in database
-        UserProfile.objects.filter(username_id=userid).update(certificate_revoked=False)
+        UserProfile.objects.filter(username_id=userid).update(
+            certificate_revoked=False)
 
         # Adding user to the userslist, So as to give a single success notification/prompt for all connections
         UsersList.append(username)
@@ -307,6 +316,8 @@ def generate_user_certificate(self, request, queryset):
     Step 3 - Once revocation completes create a dir if not already exists `config/crl`, this will save the `distribution.crl` list in it. The list is available on public IP at `http://HOSTNAME//crl/distripoint.crl`
     Step 4 - Once the above directory is created recreate the CRL(certificate revocation list) using the command `openssl ca -config intermediate/openssl.cnf -gencrl -out intermediate/crl/intermediate.crl.pem`
 """
+
+
 def revoke_user_certificate(self, request, queryset):
 
     UsersList = []
@@ -320,7 +331,8 @@ def revoke_user_certificate(self, request, queryset):
 
         #revoking the user certificate
         cmd = [
-            'openssl', 'ca', '-config', configdirname + 'openssl.cnf', '-revoke', tempdirname + certname, '-passin','pass:' + KeyPassword
+            'openssl', 'ca', '-config', configdirname + 'openssl.cnf',
+            '-revoke', tempdirname + certname, '-passin', 'pass:' + KeyPassword
         ]
         r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
         out, err = r.communicate('\n'.encode())
@@ -329,12 +341,13 @@ def revoke_user_certificate(self, request, queryset):
         userid = User.objects.get(username=username)
         userid = userid.id
         #Updating the certificate_revocation value in database
-        UserProfile.objects.filter(username_id=userid).update(certificate_revoked=True)
+        UserProfile.objects.filter(username_id=userid).update(
+            certificate_revoked=True)
 
         UsersList.append(username)
 
     allusers = ', '.join(UsersList)
-    
+
     #displaying the success message to admin
     messages.success(
         request,
@@ -342,16 +355,17 @@ def revoke_user_certificate(self, request, queryset):
 
     #recreating the certificate revocation list after each certificate revocation
     cmd = [
-        'openssl', 'ca', '-config', configdirname + 'openssl.cnf', '-gencrl', '-out', distributionlistdir + 'distripoint.crl', '-passin','pass:' + KeyPassword
+        'openssl', 'ca', '-config', configdirname + 'openssl.cnf', '-gencrl',
+        '-out', distributionlistdir + 'distripoint.crl', '-passin',
+        'pass:' + KeyPassword
     ]
     r = subprocess.Popen(cmd, stdin=subprocess.PIPE, shell=False)
     out, err = r.communicate('\n'.encode())
 
     #displaying the success message to admin
-    messages.success(
-        request,
-        "Certificate revocation list updated successfully.")
-        
+    messages.success(request,
+                     "Certificate revocation list updated successfully.")
+
 
 # Save key as private function, creates and saves the CA private key
 def save_key_as_private_key(self, request, queryset):
@@ -541,27 +555,28 @@ class UserAuthAdmin(BaseUserAdmin):
 
 # UserAdmin Class for new model, this will allow the required actions to be done from a different models and not just from the default admin/user model
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email_verified','certificate_revoked', 'cert_name', 'cert_password', 'key_name']
+    list_display = [
+        'username', 'email_verified', 'certificate_revoked', 'cert_name',
+        'cert_password', 'key_name'
+    ]
 
     # Fetching the email_verified field from UserProfile Model for accessibility
     def email_verified(self, obj):
         return obj.username.userprofile.email_verified
 
-
     # Fetching the certificate_revoked field from UserProfile Model for accessibility
     def certificate_revoked(self, obj):
-        return obj.username.userprofile.certificate_revoked    
+        return obj.username.userprofile.certificate_revoked
 
     # Using boolean fields for convenience
     email_verified.boolean = True
     certificate_revoked.boolean = True
 
-    actions = [generate_user_certificate,revoke_user_certificate]
+    actions = [generate_user_certificate, revoke_user_certificate]
 
 
 # Changing Admin header text, this is done to customize the Admin interface
 admin.site.site_header = 'Libreswan Administration'
-
 
 #Displaying the models to admin
 admin.site.unregister(User)

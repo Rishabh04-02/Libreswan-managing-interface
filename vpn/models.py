@@ -19,12 +19,13 @@ from django.core.validators import MaxValueValidator
     The connection will be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
     ipsec auto --start <connname> will be used to start connection in case of subnet to subnet (lan to lan) connections
 """
+
+
 class SubnetToSubnet(models.Model):
     connection_name = models.CharField(
         max_length=20,
         default='',
-        help_text=
-        "See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
+        help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     also = models.CharField(
         max_length=20,
         default='',
@@ -34,8 +35,7 @@ class SubnetToSubnet(models.Model):
         max_length=16,
         default='',
         blank=True,
-        help_text=
-        "Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
+        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
     )
     leftsubnet = models.CharField(
         max_length=16, default='', blank=True, help_text="eg. vhost:%no,%priv")
@@ -43,8 +43,7 @@ class SubnetToSubnet(models.Model):
         max_length=16,
         default='',
         blank=True,
-        help_text=
-        "Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
+        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
     )
     rightsubnet = models.CharField(
         max_length=19,
@@ -75,19 +74,19 @@ class SubnetToSubnet(models.Model):
     The connection will also be loaded from  /etc/ipsec.d/CONNECTION_NAME.conf
     ipsec auto --add <connname> will be used to add connection in this case 
 """
+
+
 class VpnForRemoteHost(models.Model):
     connection_name = models.CharField(
         max_length=20,
         default='',
         blank=True,
-        help_text=
-        "See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
+        help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     left = models.CharField(
         max_length=16,
         default='',
         blank=True,
-        help_text=
-        "Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
+        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
     )
     leftcert = models.CharField(
         max_length=16,
@@ -115,15 +114,13 @@ class VpnForRemoteHost(models.Model):
         max_length=16,
         default='',
         blank=True,
-        help_text=
-        "Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
+        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
     )
     rightaddresspool = models.CharField(
         max_length=16,
         default='',
         blank=True,
-        help_text=
-        "See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
+        help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     rightca = models.CharField(
         max_length=16,
         default='',
@@ -150,8 +147,7 @@ class VpnForRemoteHost(models.Model):
         max_length=4,
         default='hold',
         blank=True,
-        help_text=
-        "Valid - <b><a>clear</a></b> OR <b><a>restart</a></b> OR <b><a>hold</a></b>"
+        help_text="Valid - <b><a>clear</a></b> OR <b><a>restart</a></b> OR <b><a>hold</a></b>"
     )
     mobike = models.CharField(
         max_length=3,
@@ -174,8 +170,7 @@ class VpnForRemoteHost(models.Model):
         max_length=16,
         default='yes',
         blank=True,
-        help_text=
-        "Valid - <b><a>yes</a></b> OR <b><a>no</a></b> OR <b><a>force</a></b>")
+        help_text="Valid - <b><a>yes</a></b> OR <b><a>no</a></b> OR <b><a>force</a></b>")
     creation_date = models.DateTimeField('date created')
 
     def __str__(self):
@@ -188,15 +183,15 @@ class VpnForRemoteHost(models.Model):
 
 """ Model for User Profile creation, will be used to store some values regarding certificate generation, email verifications etc.
 """
+
+
 class UserProfile(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
     email_verified = models.BooleanField(
         default=False,
         editable=False,
         help_text="Valid - <b><a>True</a></b> OR <b><a>False</a></b>")
-    certificate_revoked = models.BooleanField(
-        default=False,
-        editable=False)
+    certificate_revoked = models.BooleanField(default=False, editable=False)
 
     def __unicode__(self):
         return unicode(self.username)
@@ -204,6 +199,8 @@ class UserProfile(models.Model):
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
+
+
 class GenerateCertificate(models.Model):
 
     username = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -239,12 +236,14 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(username=instance)
         GenerateCertificate.objects.create(username=instance)
-        instance.userprofile.save() 
+        instance.userprofile.save()
         instance.generatecertificate.save()
 
 
 """ Model for writing certificate configuration to a file, the configuration will be loaded from a file while generatig certificates.
 """
+
+
 class CertificateConfiguration(models.Model):
 
     country_name = models.CharField(
@@ -276,15 +275,13 @@ class CertificateConfiguration(models.Model):
         max_length=20,
         default='user',
         blank=False,
-        help_text=
-        "Enter Common Name (eg, your name or your server's hostname), user will write the username of user."
+        help_text="Enter Common Name (eg, your name or your server's hostname), user will write the username of user."
     )
     email_address = models.CharField(
         max_length=30,
         default='@email.com',
         blank=False,
-        help_text=
-        "It will be shown as username@email.com, if common name is user. else it will be shown as @email.com"
+        help_text="It will be shown as username@email.com, if common name is user. else it will be shown as @email.com"
     )
     expiration_period = models.PositiveIntegerField(
         validators=[MaxValueValidator(9999)],
@@ -302,6 +299,8 @@ class CertificateConfiguration(models.Model):
 
 """ Model for certificate generation, will be used to update token/cert_password values
 """
+
+
 class GeneratePrivateKey(models.Model):
 
     key_name = models.CharField(
@@ -325,17 +324,13 @@ class GeneratePrivateKey(models.Model):
 
 """ Model for storing privatekey password, will be used while signing the certificates.
 """
+
+
 class PrivateKeyPassword(models.Model):
 
     key_name = models.CharField(
-        primary_key=True,
-        max_length=20,
-        default='Private Key',
-        blank=False)
-    priv_key_password = models.CharField(
-        max_length=20,
-        default='',
-        blank=False)
+        primary_key=True, max_length=20, default='Private Key', blank=False)
+    priv_key_password = models.CharField(max_length=20, default='', blank=False)
 
     def __str__(self):
         return self.priv_key_password
@@ -343,6 +338,8 @@ class PrivateKeyPassword(models.Model):
 
 """ Model for generating root certificate, This certificate will be used to sign all other certificates.
 """
+
+
 class GenerateRootCertificate(models.Model):
 
     country_name = models.CharField(
