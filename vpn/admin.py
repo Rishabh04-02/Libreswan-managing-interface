@@ -263,6 +263,13 @@ def dlt_temp_cert(filename):
     out, err = s.communicate('\n'.encode())
 
 
+# Delete .p12 files when user data is deleted
+def dlt_p12_cert(filename):
+    cmd = ['rm', '-rf', dirname + filename]
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
+
 """ Generate user certificate -
     Steps for generating temporary/intermediate certificates:
     Step 1 [Generate random names for certs(public and private)] - Get random name for certificate and key, as every key and cert will be unique this will save from any certificate/key overwriting
@@ -489,6 +496,9 @@ def DisableUser(self, request, queryset):
                      "The users: " + allusers + " Disabled successfully.")
 
 
+DisableUser.short_description = "Disable User (Disallow User to Login)"
+
+
 # Enable user function, this is enabling(reactivating) the disabled user. So, that user can login to the portal and do the required things
 def EnableUser(self, request, queryset):
     UsersList = []
@@ -503,6 +513,90 @@ def EnableUser(self, request, queryset):
     messages.success(request,
                      "The users: " + allusers + " Enabled successfully.")
 
+
+EnableUser.short_description = "Enable User (Allow User to Login)"
+
+
+# Delete user data will delete all the certificates generated for user
+def DeleteUserData(self, request, queryset):
+    UsersList = []
+    for qs in queryset:
+        username = str(qs.username)
+        #get user data from database
+        user = GenerateCertificate.objects.get(username__username=username)
+        keyname = user.key_name
+        certname = user.cert_name
+
+        #deleting the certificates from system
+        dlt_temp_cert(keyname + '.pem')
+        dlt_temp_cert(certname + '.pem')
+        dlt_p12_cert(username + '.p12')
+
+        #deleting the user data from database
+        GenerateCertificate.objects.filter(username__username=username).update(
+            cert_name='')
+        GenerateCertificate.objects.filter(username__username=username).update(
+            cert_password='')
+        GenerateCertificate.objects.filter(username__username=username).update(
+            key_name='')
+        UserProfile.objects.filter(username__username=username).update(
+            certificate_revoked=False)
+        UsersList.append(username)
+
+    # Displaying success message for disabling user
+    allusers = ', '.join(UsersList)
+    messages.success(request,
+                     "The users: " + allusers + " data deleted successfully.")
+
+
+DeleteUserData.short_description = "Delete User Data (Keys & Certificates)"
+
+
+# Deletes all the user certificates and resets the index and serial along with the crlnumber (user to generate the CR list)
+def DeleteAllUserCertificates(self, request, queryset):
+    #delete contents from certs/
+    cmd = ['rm', '-rf', dirname + '*']
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
+    #delete contents from temp_certs/
+    cmd = ['rm', '-rf', tempdirname + '*']
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
+    #delete certificates info
+    cmd = [
+        'rm', '-rf', configdirname + 'index.txt.attr',
+        configdirname + 'index.txt.attr.old', configdirname + 'index.txt.old',
+        configdirname + 'serial.old'
+    ]
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
+    #delete contents from index.txt file
+    f = open(configdirname + 'index.txt', 'w+')
+    f.close()
+
+    #add 01 as starting no. in serial file
+    f = open(configdirname + 'serial', 'w+')
+    f.write('01')
+    f.close()
+
+    #delete files from crl directory
+    cmd = [
+        'rm', '-rf', distributionlistdir + 'crlnumber.old',
+        distributionlistdir + 'distripoint.crl'
+    ]
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
+    #add 01 as starting no. on crlnumber
+    f = open(distributionlistdir + 'crlnumber', 'w+')
+    f.write('01')
+    f.close()
+    
+
+DeleteAllUserCertificates.short_description = "Delete all user certificates"
 
 # Creating admin task options as this will display(list_display) info in the admin panel
 class TaskAdmin(admin.ModelAdmin):
@@ -549,7 +643,7 @@ class UserAuthAdmin(BaseUserAdmin):
     list_display = [
         'username', 'email', 'is_active', 'last_login', 'date_joined'
     ]
-    actions = [EnableUser, DisableUser]
+    actions = [DeleteUserData, EnableUser, DisableUser, DeleteAllUserCertificates]
     inlines = (UserDetailInline, UserProfileInline)
 
 
@@ -572,7 +666,7 @@ class UserAdmin(admin.ModelAdmin):
     email_verified.boolean = True
     certificate_revoked.boolean = True
 
-    actions = [generate_user_certificate, revoke_user_certificate]
+    actions = [generate_user_certificate, revoke_user_certificate, DeleteUserData, DeleteAllUserCertificates]
 
 
 # Changing Admin header text, this is done to customize the Admin interface
