@@ -12,12 +12,30 @@ from django.http import HttpResponse
 from django.views import View
 from .forms import SignUpForm
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect
+from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
 
 
 def index(request):
     return render(request, "vpn/index.html", {})
+
+
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        return render(request, 'vpn/home.html', {})
+    else:
+        return HttpResponse(
+            '<center>Login Failed</center>')
+
+
+def logout(request):
+    return redirect('/')
 
 
 def activate_account(request):

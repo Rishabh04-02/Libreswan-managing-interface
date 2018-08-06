@@ -14,7 +14,24 @@
         <img src="{% static 'vpn/img/libreswan-logo.png' %}" />
         <h1>libreswan Managing Interface</h1>
         <br><a href="/admin">Admin Login</a><br>
-        <br><a href="/activate_account">Activate Account</a>
+        <br><a href="/activate_account">Activate Account</a><br><br>
+
+        <br><p><u>User Login</u></p>
+            <form method="post" action="/login/">
+                {% csrf_token %}
+                <div class="form-group">
+                <p>
+                        <label for="id_username">username</label>
+                        <input class="form-control" id="id_username" name="username" autofocus="" required="" type="text">
+                    </p>
+                <p>
+                        <label for="id_password">password</label>
+                        <input class="form-control" id="id_password" name="password" autofocus="" required="" type="password">
+                    </p>
+                <button type="submit">login</button>
+                </div>
+            </form>
+
     </center>
 </body>
 
