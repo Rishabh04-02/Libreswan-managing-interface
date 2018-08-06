@@ -595,6 +595,11 @@ def DeleteAllUserCertificates(self, request, queryset):
     f.write('01')
     f.close()
     
+    #resetting the keys & certificates values in database
+    keys_and_certs = {'cert_name': '', 'cert_password': '', 'key_name': ''}
+    cert_revoke = {'certificate_revoked':False}
+    GenerateCertificate.objects.all().update(**keys_and_certs)
+    UserProfile.objects.all().update(**cert_revoke)
 
 DeleteAllUserCertificates.short_description = "Delete all user certificates"
 
