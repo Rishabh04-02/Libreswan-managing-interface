@@ -15,6 +15,9 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.forms import AuthenticationForm
+from .models import GenerateCertificate, UserProfile
+from django.views.static import serve
+import os
 
 # Create your views here.
 
@@ -24,18 +27,38 @@ def index(request):
 
 
 def login(request):
-    username = request.POST['username']
+    username = str(request.POST['username'])
     password = request.POST['password']
     user = authenticate(request, username=username, password=password)
     if user is not None:
-        return render(request, 'vpn/home.html', {})
+        userid = User.objects.get(username=username)
+        useractive = userid.is_active
+        userid = userid.id
+        email_verify = UserProfile.objects.get(username_id=userid)
+        email_verify = email_verify.email_verified
+        if userid and email_verify is True:
+            CertPassword = GenerateCertificate.objects.get(username_id=userid)
+            CertPassword = CertPassword.cert_password
+            filepath = '/certs/' + username + '.p12' 
+            BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            certlocation = BASE_DIR + os.path.join(BASE_DIR, filepath)
+            
+            return render(request, 'vpn/home.html', {
+                'CertPassword': CertPassword,
+                'username': username,
+                'certificate': filepath,
+                'certlocation': certlocation})
+        else:
+            return HttpResponse(
+                '<center>Login Failed, have you activated your account?</center>')
     else:
         return HttpResponse(
-            '<center>Login Failed</center>')
+            '<center>Login Failed<br><a href="/">Login again?</a></center>')
 
 
 def logout(request):
-    return redirect('/')
+    return HttpResponse(
+            '<center>Logged out<br><a href="/">Login again?</a></center>')
 
 
 def activate_account(request):

@@ -1,5 +1,7 @@
 {% block content %}
-  this is home
-{% endblock %}
+  this is home, your certificate password is: <b>{{ CertPassword }}</b><br>
+  Download your certificate here: <a href="file://{{ certlocation }}" download>{{ username }}</a>
 
+<br>
 <a href="/logout/">Logout</a>
+{% endblock %}
