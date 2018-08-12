@@ -26,40 +26,35 @@ class SubnetToSubnet(models.Model):
         max_length=20,
         default='',
         help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
-    also = models.CharField(
-        max_length=20,
-        default='',
-        blank=True,
-        help_text="The value is a section <b><a>name</a></b>")
     left = models.CharField(
         max_length=16,
-        default='',
-        blank=True,
+        default='Input IP',
+        blank=False,
         help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
     )
     leftsubnet = models.CharField(
-        max_length=16, default='', blank=True, help_text="eg. vhost:%no,%priv")
+        max_length=16, default='0.0.0.0/0', blank=True, help_text="eg. 0.0.0.0/0")
     right = models.CharField(
         max_length=16,
-        default='',
-        blank=True,
-        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
+        default='Input IP',
+        blank=False,
+        help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b>"
     )
     rightsubnet = models.CharField(
         max_length=19,
         default='',
         blank=True,
         help_text="Valid - <b><a>Input IP</a></b> OR <b><a>leave blank</a></b>")
-    keyringtries = models.CharField(
+    keyingtries = models.CharField(
         max_length=16,
         default='%forever',
         blank=True,
         help_text="eg. <b><a>%forever</a></b>")
     auto = models.CharField(
         max_length=16,
-        default='',
+        default='add',
         blank=True,
-        help_text="eg. <b><a>start</a></b>")
+        help_text="eg. <b><a>start OR add</a></b>")
     creation_date = models.DateTimeField('date created')
 
     def __str__(self):
@@ -84,8 +79,8 @@ class VpnForRemoteHost(models.Model):
         help_text="See Reference - <a>https://libreswan.org/man/ipsec.conf.5.html</a>")
     left = models.CharField(
         max_length=16,
-        default='',
-        blank=True,
+        default='Input IP',
+        blank=False,
         help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b> OR <b><a>%opportunistic</a></b>"
     )
     leftcert = models.CharField(
@@ -104,16 +99,16 @@ class VpnForRemoteHost(models.Model):
         blank=True,
         help_text="Valid - <b><a>yes|always</a></b> OR <b><a>no|never</a></b>")
     leftsubnet = models.CharField(
-        max_length=16, default='', blank=True, help_text="eg. vhost:%no,%priv")
+        max_length=16, default='0.0.0.0/0', blank=True, help_text="eg. 0.0.0.0/0")
     leftrsasigkey = models.CharField(
         max_length=16,
-        default='%dnsondemand',
+        default='%cert',
         blank=True,
         help_text="eg. <b><a>%cert</a></b>")
     right = models.CharField(
         max_length=16,
-        default='',
-        blank=True,
+        default='Input IP',
+        blank=False,
         help_text="Valid - <b><a>Input IP</a></b> OR <b><a>%defaultroute</a></b> OR <b><a>%any</a></b>"
     )
     rightaddresspool = models.CharField(
@@ -133,32 +128,32 @@ class VpnForRemoteHost(models.Model):
         help_text="eg. <b><a>8.8.8.8,193.100.157.123</a></b>")
     narrowing = models.CharField(
         max_length=3,
-        default='no',
+        default='',
         blank=True,
         help_text="Valid - <b><a>no</a></b> OR <b><a>yes</a></b>")
     dpddelay = models.CharField(
-        max_length=4, default='0', blank=True, help_text="eg. <b><a>10</a></b>")
+        max_length=4, default='15', blank=True, help_text="eg. <b><a>10</a></b>")
     dpdtimeout = models.CharField(
         max_length=4,
-        default='0',
+        default='90',
         blank=True,
         help_text="eg. <b><a>150</a></b>")
     dpdaction = models.CharField(
-        max_length=4,
-        default='hold',
+        max_length=7,
+        default='clear',
         blank=True,
         help_text="Valid - <b><a>clear</a></b> OR <b><a>restart</a></b> OR <b><a>hold</a></b>"
     )
     mobike = models.CharField(
         max_length=3,
-        default='no',
+        default='yes',
         blank=True,
         help_text="Valid - <b><a>no</a></b> OR <b><a>yes</a></b>")
     auto = models.CharField(
         max_length=16,
-        default='',
+        default='add',
         blank=True,
-        help_text="eg. <b><a>start</a></b>")
+        help_text="eg. <b><a>start OR add</a></b>")
     ikev2 = models.CharField(
         max_length=16,
         default='',

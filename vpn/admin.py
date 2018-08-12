@@ -50,11 +50,11 @@ def write_to_file(modeladmin, request, queryset):
         lastval = len(list_values)
         file = "/etc/ipsec.d/" + qs.connection_name + ".conf"
         f = open(file, 'w+')
-        f.write("conn\t" + qs.connection_name + "\n")
+        f.write("conn " + qs.connection_name + "\n")
         for i in range(0, lastval):
             current = list_values[i]
             if (hasattr(qs, current) and getattr(qs, current) != ''):
-                f.write("\t\t" + current + "=" + getattr(qs, current) + "\n")
+                f.write("\t" + current + "=" + getattr(qs, current) + "\n")
                 if current == 'leftcert':
                     SubnetOrVpn = 1
         f.write("\n")
