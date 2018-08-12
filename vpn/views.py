@@ -39,14 +39,11 @@ def login(request):
         if userid and email_verify is True:
             CertPassword = GenerateCertificate.objects.get(username_id=userid)
             CertPassword = CertPassword.cert_password
-            filepath = '/certs/' + username + '.p12' 
-            BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            certlocation = BASE_DIR + os.path.join(BASE_DIR, filepath)
+            certlocation = '/certs/' + username + '.p12'
             
             return render(request, 'vpn/home.html', {
                 'CertPassword': CertPassword,
                 'username': username,
-                'certificate': filepath,
                 'certlocation': certlocation})
         else:
             return HttpResponse(

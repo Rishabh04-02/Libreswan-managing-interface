@@ -22,4 +22,5 @@ urlpatterns = [
     # VPN interface is the default interface
     url(r'^', include('vpn.urls')),
     url(r'^admin/', admin.site.urls),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.UPLOAD_URL, document_root=settings.UPLOAD_ROOT)
+

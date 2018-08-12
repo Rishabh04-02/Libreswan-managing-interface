@@ -138,3 +138,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 MEDIA_URL = '/crl/'
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'config/crl/')
+
+UPLOAD_URL = '/certs/'
+UPLOAD_ROOT = os.path.join(BASE_DIR, 'certs/')
