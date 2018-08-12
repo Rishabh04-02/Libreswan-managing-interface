@@ -40,14 +40,17 @@ def login(request):
             CertPassword = GenerateCertificate.objects.get(username_id=userid)
             CertPassword = CertPassword.cert_password
             certlocation = '/certs/' + username + '.p12'
-            
-            return render(request, 'vpn/home.html', {
-                'CertPassword': CertPassword,
-                'username': username,
-                'certlocation': certlocation})
+
+            return render(
+                request, 'vpn/home.html', {
+                    'CertPassword': CertPassword,
+                    'username': username,
+                    'certlocation': certlocation
+                })
         else:
             return HttpResponse(
-                '<center>Login Failed, have you activated your account?</center>')
+                '<center>Login Failed, have you activated your account?</center>'
+            )
     else:
         return HttpResponse(
             '<center>Login Failed<br><a href="/">Login again?</a></center>')
@@ -55,7 +58,7 @@ def login(request):
 
 def logout(request):
     return HttpResponse(
-            '<center>Logged out<br><a href="/">Login again?</a></center>')
+        '<center>Logged out<br><br><a href="/">Login again?</a> | <a href="/">Home Page</a></center>')
 
 
 def activate_account(request):
