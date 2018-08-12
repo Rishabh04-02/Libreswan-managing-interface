@@ -564,6 +564,11 @@ def DeleteAllUserCertificates(self, request, queryset):
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
+    #delete CA certificates
+    cmd = ['rm', '-rf', configdirname + 'private/' + '*']
+    s = subprocess.Popen(cmd, shell=False)
+    out, err = s.communicate('\n'.encode())
+
     #delete certificates info
     cmd = [
         'rm', '-rf', configdirname + 'index.txt.attr',
@@ -601,7 +606,7 @@ def DeleteAllUserCertificates(self, request, queryset):
     GenerateCertificate.objects.all().update(**keys_and_certs)
     UserProfile.objects.all().update(**cert_revoke)
 
-DeleteAllUserCertificates.short_description = "Delete all user certificates"
+DeleteAllUserCertificates.short_description = "Delete all certificates (User & CA)"
 
 # Creating admin task options as this will display(list_display) info in the admin panel
 class TaskAdmin(admin.ModelAdmin):
