@@ -1,6 +1,6 @@
 {% block content %}
   this is home, your certificate password is: <b>{{ CertPassword }}</b><br>
-  Download your certificate here: <a href="{{ request.META.HTTP_HOST }}{{ certlocation }}" download>{{ username }}</a>
+  Download your certificate here: <a href="{{ certlocation }}" download>{{ username }}</a>
 
 <br>
 <a href="/logout/">Logout</a>
