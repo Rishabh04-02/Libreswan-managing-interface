@@ -493,7 +493,7 @@ def DisableUser(self, request, queryset):
     # Displaying success message for disabling user
     allusers = ', '.join(UsersList)
     messages.success(request,
-                     "The users: " + allusers + " Disabled successfully.")
+                     "The users: " + allusers + " Disabled successfully. These users can't login to this interface now.")
 
 
 DisableUser.short_description = "Disable User (Disallow User to Login)"
@@ -511,7 +511,7 @@ def EnableUser(self, request, queryset):
     # Displaying success message for enabling user
     allusers = ', '.join(UsersList)
     messages.success(request,
-                     "The users: " + allusers + " Enabled successfully.")
+                     "The users: " + allusers + " Enabled successfully. These users can now login to this interface.")
 
 
 EnableUser.short_description = "Enable User (Allow User to Login)"
@@ -555,22 +555,22 @@ DeleteUserData.short_description = "Delete User Data (Keys & Certificates)"
 # Deletes all the user certificates and resets the index and serial along with the crlnumber (user to generate the CR list)
 def DeleteAllUserCertificates(self, request, queryset):
     
-    #delete contents from certs/
+    #delete certs/ directory
     cmd = ['rm', '-rf', dirname]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
-    #delete contents from temp_certs/
+    #delete temp_certs/ directory
     cmd = ['rm', '-rf', tempdirname]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
-    #delete CA certificates
+    #delete CA certificates directory
     cmd = ['rm', '-rf', configdirname + 'private/']
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
-    #delete certificates info
+    #delete certificates info and certificate conf file
     cmd = [
         'rm', '-rf', configdirname + 'index.txt.attr',
         configdirname + 'index.txt.attr.old', configdirname + 'index.txt.old',
