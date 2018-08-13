@@ -17,6 +17,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 ## Steps to get the app running
 1. **Install virtualenv and activate it [Installation](https://virtualenv.pypa.io/en/stable/installation/)**
+
 	To install virtualenv, we will use the pip3 command, as shown below:
 
 		$	pip3 install virtualenv
@@ -29,6 +30,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 	virtualenv installed successfully.
 
 2. **Install `pip` in `virtualenv`**
+
 	*Installing on Debian (Wheezy and newer) and Ubuntu (Trusty Tahr and newer) for Python 3.x*
 	Run the following command from a terminal:
 
@@ -42,6 +44,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 		sudo easy_install pip
 
 3. **Install django 2.0.x**
+
 	For that you first need to clone the `Libreswan-managing-interface` from the main repo/fork
 
 		git clone git clone git@github.com:Rishabh04-02/Libreswan-managing-interface.git
@@ -75,11 +78,13 @@ Note - These can also be installed in virtualenv and not in whole system.
 		(librenv) user@host:$	python -c "import django; print(django.get_version())"
 
 4. **Install mysqlclient in virtualenv**
+
 	instal using the command below:
 
 		(librenv) user@host:$	pip3 install mysqlclient
 
 5. **Configuration settings**
+
 	* Add database login credentials
 	Copy the contents of file `libreswan_managing_interface/sample_database.cnf` to file `libreswan_managing_interface/database.cnf` and update the details.
 
@@ -89,6 +94,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 		ALLOWED_HOSTS = [192.56.167.123]	#sample host IP
 
 6. **Preparing the app for running**
+
 	* Migrating the databases using the management script using the command below:
 
 			(librenv) user@host:$	./manage.py migrate
@@ -104,6 +110,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 	The static files will be placed in a directory called static within the project directory.
 
 7. **Running the app**
+
 	* If you want to generate VPN profile then follow the below instructions:
 
 			(librenv) user@host:$	sudo su

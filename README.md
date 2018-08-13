@@ -15,3 +15,4 @@ Common configuration examples can be found in our [Wiki](https://libreswan.org/w
 Please Refer:
 1. [INSTALLATION INSTRUCTIONS](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md) 
 2. [LIBRESWAN ADMINISTRATION GUIDE](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/ADMINISTRATION_GUIDE.md)
+3. [Google Summer of Code - Project Proposal](https://rishabhchaudhary.in/GSOC_Project_Proposal.pdf)
