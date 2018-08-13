@@ -11,5 +11,5 @@ Managing Interface for Libreswan VPN software.
 
 # Initial project setup/First time installation
 Please Refer:
-[INSTALLATION INSTRUCTIONS](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md) and 
-[LIBRESWAN ADMINISTRATION GUIDE - Using the Libreswan Managing Interface](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/LIBRESWAN_ADMINISTRATION_GUIDE.md)
+1. [INSTALLATION INSTRUCTIONS](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md) 
+2. [LIBRESWAN ADMINISTRATION GUIDE - Using the Libreswan Managing Interface](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/LIBRESWAN_ADMINISTRATION_GUIDE.md)
