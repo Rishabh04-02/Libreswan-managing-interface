@@ -3,160 +3,129 @@
 ## Prerequisites (System)
 Note - These can also be installed in virtualenv and not in whole system.
 
-1) Virtual Environment [Installation](https://virtualenv.pypa.io/en/stable/installation/)
+1. **Virtual Environment [Installation](https://virtualenv.pypa.io/en/stable/installation/)**
 
-2) Python 3.5 [Download](https://www.python.org/downloads/)
+2. **Python 3.5 [Download](https://www.python.org/downloads/)**
 
->	Version check:	$	python3 -V
->	Output format:	Python 3.5.4
+		Version check:	$	python3 -V
+		Output format:	Python 3.5.4
 
+3. **pip3 [Install pip with Python3](https://stackoverflow.com/questions/6587507/how-to-install-pip-with-python-3)**
 
-3) pip3 [Install pip with Python3](https://stackoverflow.com/questions/6587507/how-to-install-pip-with-python-3)
-
->	Version check:	$	pip3 -V
->	Output format:	pip 10.0.1 from ..../lib/python3.5/site-packages/pip (python 3.5)
-
-
+		Version check:	$	pip3 -V
+		Output format:	pip 10.0.1 from ..../lib/python3.5/site-packages/pip (python 3.5)
 
 ## Steps to get the app running
-1) Install virtualenv and activate it [Installation](https://virtualenv.pypa.io/en/stable/installation/)
+1. **Install virtualenv and activate it [Installation](https://virtualenv.pypa.io/en/stable/installation/)**
+	To install virtualenv, we will use the pip3 command, as shown below:
 
-To install virtualenv, we will use the pip3 command, as shown below:
+		$	pip3 install virtualenv
+	Once it is installed, run a version check to verify that the installation has completed successfully:
 
-	$	pip3 install virtualenv
-Once it is installed, run a version check to verify that the installation has completed successfully:
+		$	virtualenv --version
+	We should see the following output, or something similar:
 
-	$	virtualenv --version
-We should see the following output, or something similar:
+		Output format:	16.0.0
+	virtualenv installed successfully.
 
-	Output format:	16.0.0
-virtualenv installed successfully.
+2. **Install `pip` in `virtualenv`**
+	*Installing on Debian (Wheezy and newer) and Ubuntu (Trusty Tahr and newer) for Python 3.x*
+	Run the following command from a terminal:
 
+		sudo apt-get install python3-pip
 
-2) Install `pip` in `virtualenv`
+	*Installing pip on CentOS 7 for Python 3.x*
+	Assuming you installed Python 3.5 from EPEL, you can install Python 3's setup tools and use it to install pip.
+	Note - First command requires you to have enabled EPEL for CentOS7
 
-Installing on Debian (Wheezy and newer) and Ubuntu (Trusty Tahr and newer) for Python 3.x
+		sudo yum install python35-setuptools
+		sudo easy_install pip
 
-Run the following command from a terminal:
+3. **Install django 2.0.x**
+	For that you first need to clone the `Libreswan-managing-interface` from the main repo/fork
 
-	sudo apt-get install python3-pip
+		git clone git clone git@github.com:Rishabh04-02/Libreswan-managing-interface.git
+	OR
 
-Installing pip on CentOS 7 for Python 3.x
+		git clone https://github.com/Rishabh04-02/Libreswan-managing-interface.git
+	OR
+	Download from [Libreswan-managing-interface - Github](https://github.com/Rishabh04-02/Libreswan-managing-interface)	after that get into the `Libreswan-managing-interface` directory
+		
+		cd Libreswan-managing-interface
+	then create a virtualenv (`librenv` or any other name of your choice) in the folder using the command below:
 
-Assuming you installed Python 3.5 from EPEL, you can install Python 3's setup tools and use it to install pip.
+		virtualenv librenv
+	Now activate the virtualenv using the command below:
 
-Note - First command requires you to have enabled EPEL for CentOS7
+		source librenv/bin/activate
+	You’ll know it’s activated once the prefix is changed to (`librenv`), which will look similar to the following depending on what directory you are in:
 
-	sudo yum install python35-setuptools
-	sudo easy_install pip
+		(librenv) user@host:$
+	Now install django 2.0.x using the command below:
 
+		(librenv) user@host:$	pip3 install django==2.0.6
+	check django version from one of the following two ways:
 
-3) Install django 2.0.x 
+		python
+		>>> import django
+		>>> django.VERSION
+		(2, 0, 0, 'final', 0)
+	OR
+		
+		(librenv) user@host:$	python -c "import django; print(django.get_version())"
 
-For that you first need to clone the `Libreswan-managing-interface` from the main repo/fork
+4. **Install mysqlclient in virtualenv**
+	instal using the command below:
 
-	git clone git clone git@github.com:Rishabh04-02/Libreswan-managing-interface.git
-OR
+		(librenv) user@host:$	pip3 install mysqlclient
 
-	git clone https://github.com/Rishabh04-02/Libreswan-managing-interface.git
-OR
-Download from [Libreswan-managing-interface - Github](https://github.com/Rishabh04-02/Libreswan-managing-interface)
+5. **Configuration settings**
+	* Add database login credentials
+	Copy the contents of file `libreswan_managing_interface/sample_database.cnf` to file `libreswan_managing_interface/database.cnf` and update the details.
 
-after that get into the `Libreswan-managing-interface` directory
-	
-	cd Libreswan-managing-interface
+	* Add host ip to allowed IP's list
+	In the `libreswan_managing_interface/settings.py` add your HOST_NAME to the following line:
 
-then create a virtualenv (`librenv` or any other name of your choice) in the folder using the command below:
+		ALLOWED_HOSTS = [192.56.167.123]	#sample host IP
 
-	virtualenv librenv
-Now activate the virtualenv using the command below:
+6. **Preparing the app for running**
+	* Migrating the databases using the management script using the command below:
 
-	source librenv/bin/activate
+			(librenv) user@host:$	./manage.py migrate
 
-You’ll know it’s activated once the prefix is changed to (`librenv`), which will look similar to the following depending on what directory you are in:
+	* Create an administrative user for the project by typing:
 
-	(librenv) user@host:$
+			(librenv) user@host:$	./manage.py createsuperuser
+	This will let you select a username, provide an email address, and choose and confirm a password.
 
-Now install django 2.0.x using the command below:
+	* Now collecting all of the static content into the directory location:
+		
+			(librenv) user@host:$	./manage.py collectstatic
+	The static files will be placed in a directory called static within the project directory.
 
-	(librenv) user@host:$	pip3 install django==2.0.6
+7. **Running the app**
+	* If you want to generate VPN profile then follow the below instructions:
 
-check django version from one of the following two ways:
+			(librenv) user@host:$	sudo su
+			(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
 
-	python
-	>>> import django
-	>>> django.VERSION
-	(2, 0, 0, 'final', 0)
-OR
-	
-	(librenv) user@host:$	python -c "import django; print(django.get_version())"
+	Now on your browser navigate to - `http://HOSTNAME:8000/`
+	Your site will be running.
+	Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates.
 
+	* If you want to create certificates then follow the below instructions:
+	It can be run using the commands below:
 
-4) Install mysqlclient in virtualenv
+			(librenv) user@host:$	sudo su
+			(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
 
-instal using the command below:
+	Now on your browser navigate to - `http://HOSTNAME:8000/`
+	Your site will be running.
+	Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates. This issue will be fixed soon.
 
-	(librenv) user@host:$	pip3 install mysqlclient
+8. **Deactivate the environment**
 
-
-5) Configuration settings
-
-* Add database login credentials
-
-Copy the contents of file `libreswan_managing_interface/sample_database.cnf` to file `libreswan_managing_interface/database.cnf` and update the details.
-
-* Add host ip to allowed IP's list
-
-In the `libreswan_managing_interface/settings.py` add your HOST_NAME to the following line:
-
-	ALLOWED_HOSTS = [192.56.167.123]	#sample host IP
-
-
-6) Preparing the app for running
-
-* Migrating the databases using the management script using the command below:
-
-		(librenv) user@host:$	./manage.py migrate
-
-* Create an administrative user for the project by typing:
-
-		(librenv) user@host:$	./manage.py createsuperuser
-This will let you select a username, provide an email address, and choose and confirm a password.
-
-* Now collecting all of the static content into the directory location:
-	
-		(librenv) user@host:$	./manage.py collectstatic
-The static files will be placed in a directory called static within the project directory.
-
-
-7) Running the app
-
-* If you want to generate VPN profile then follow the below instructions:
-
-
-		(librenv) user@host:$	sudo su
-		(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
-
-Now on your browser navigate to - `http://your-server-ip:8000/`
-
-Your site will be running.
-Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates.
-
-* If you want to create certificates then follow the below instructions:
-It can be run using the commands below:
-
-		(librenv) user@host:$	sudo su
-		(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
-
-Now on your browser navigate to - `http://your-server-ip:8000/`
-
-Your site will be running.
-Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates. This issue will be fixed soon.
-
-8) Deactivate the environment
-
-		(librenv) user@host:$	deactivate
-
+			(librenv) user@host:$	deactivate
 
 ### References
 1) [https://www.digitalocean.com/community/tutorials/](https://www.digitalocean.com/community/tutorials/how-to-install-django-and-set-up-a-development-environment-on-ubuntu-16-04)
