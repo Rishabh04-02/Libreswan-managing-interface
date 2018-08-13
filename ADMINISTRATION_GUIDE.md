@@ -3,23 +3,23 @@
 # Libreswan Administration Guide
 This guide aims to improve user experience when using Libreswan Administration Interface.
 
-## Functionalities 
 ![Functionalities](https://image.ibb.co/hH1zRU/01_Functionalities.png)
 
-* Add User
-* Create VPN for remote host connection profiles
-* Create Subnet to Subnet VPN connection profiles
-* Generate Private Key (CA private key)
-* Generate root certificate (Using CA private key)
-* Create certificate configurations (for user certificates)
-* Generate user certificates
-* Revoke user certificates
-* Enable user (Allow User to login)
-* Disable user (Disallow User to login)
-* Delete User Data (Keys & Certificates)
-* Delete all certificates (User, CA & Default Certificate configuration)
-* Account activation (email verification)
-* Download the certificate generated for user
+## Functionalities 
+* [Add User](#add-user)
+* [Create VPN for remote host connection profiles](#create-vpn-for-remote-host-connection-profiles)
+* [Create Subnet to Subnet VPN connection profiles](#create-subnet-to-subnet-vpn-connection-profiles)
+* [Generate Private Key (CA private key)](#generate-private-key-ca-private-key)
+* [Generate root certificate (Using CA private key)](#generate-root-certificate-using-ca-private-key)
+* [Create certificate configurations (for user certificates)](#create-certificate-configurations-for-user-certificates)
+* [Generate user certificates](#generate-user-certificates)
+* [Revoke user certificates](#revoke-user-certificates)
+* [Enable user (Allow User to login)](#enable-user-allow-user-to-login)
+* [Disable user (Disallow User to login)](#disable-user-disallow-user-to-login)
+* [Delete User Data (Keys & Certificates)](#delete-user-data-keys--certificates)
+* [Delete all certificates (User, CA & Default Certificate configuration)](#delete-all-certificates-user-ca--default-certificate-configuration)
+* [Account activation (email verification)](#account-activation-email-verification)
+* [Download the certificate generated for user](#download-the-certificate-generated-for-user)
 
 ### Add User
 This will add the user to the interface. To add user visit the following link or choose the add user option from the Libreswan Interface(top right corner)
@@ -87,7 +87,7 @@ This will generate the CA signed certificates for users.
 
 		http://HOSTNAME/activate/LQ/4xt-60306def302911f8e957/
 
-* Admin should have completed the step - **Create certificate configurations (for user certificates)**
+* Admin should have completed the step - *[Create certificate configurations (for user certificates)](#create-certificate-configurations-for-user-certificates)*
 
 ![Generate user certificates](https://image.ibb.co/mtvhfp/13_Generate_User_Certificate.png)
 
