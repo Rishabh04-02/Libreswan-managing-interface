@@ -554,18 +554,19 @@ DeleteUserData.short_description = "Delete User Data (Keys & Certificates)"
 
 # Deletes all the user certificates and resets the index and serial along with the crlnumber (user to generate the CR list)
 def DeleteAllUserCertificates(self, request, queryset):
+    
     #delete contents from certs/
-    cmd = ['rm', '-rf', dirname + '*']
+    cmd = ['rm', '-rf', dirname]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
     #delete contents from temp_certs/
-    cmd = ['rm', '-rf', tempdirname + '*']
+    cmd = ['rm', '-rf', tempdirname]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
     #delete CA certificates
-    cmd = ['rm', '-rf', configdirname + 'private/' + '*']
+    cmd = ['rm', '-rf', configdirname + 'private/']
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
 
@@ -573,7 +574,7 @@ def DeleteAllUserCertificates(self, request, queryset):
     cmd = [
         'rm', '-rf', configdirname + 'index.txt.attr',
         configdirname + 'index.txt.attr.old', configdirname + 'index.txt.old',
-        configdirname + 'serial.old'
+        configdirname + 'serial.old', configdirname + 'default_certificate.conf'
     ]
     s = subprocess.Popen(cmd, shell=False)
     out, err = s.communicate('\n'.encode())
@@ -605,6 +606,10 @@ def DeleteAllUserCertificates(self, request, queryset):
     cert_revoke = {'certificate_revoked':False}
     GenerateCertificate.objects.all().update(**keys_and_certs)
     UserProfile.objects.all().update(**cert_revoke)
+
+    # Displaying success message
+    messages.success(request,
+                     "All User & CA certificates deleted successfully.")
 
 DeleteAllUserCertificates.short_description = "Delete all certificates (User & CA)"
 
