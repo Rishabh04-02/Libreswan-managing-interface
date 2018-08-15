@@ -84,8 +84,7 @@ emailAddress_default            = trialemail@mail.com
 
 [ v3_ca ]
 subjectKeyIdentifier = hash
-# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
-crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl
+crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl
 authorityKeyIdentifier = keyid:always,issuer:always
 basicConstraints = critical,CA:true
 keyUsage = keyCertSign, cRLSign
@@ -101,8 +100,7 @@ keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 
 [ usr_cert ]
 # Extensions for client certificates (`man x509v3_config`).
-# crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl.pem
-crlDistributionPoints = URI:http://localhost:8000/crl/distripoint.crl
+crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl
 basicConstraints = CA:FALSE
 nsCertType = client, email
 nsComment = "Libreswan Managing Interface Client Certificate"

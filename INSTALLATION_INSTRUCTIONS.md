@@ -93,6 +93,20 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 		ALLOWED_HOSTS = [192.56.167.123]	#sample host IP
 
+	* Add SMTP credentials
+	To the file `libreswan_managing_interface/settings.py` add the SMTP user credentials to the following lines:
+
+		    EMAIL_HOST = 'smtp.gmail.com'
+		    EMAIL_HOST_USER = 'myemail@gmail.com'
+		    EMAIL_HOST_PASSWORD = 'mypasswordhere'
+
+	* Add HOSTNAME to `config/openssl.cnf`
+	In this file on line `87` & `103` find the below mentioned content:
+
+		    crlDistributionPoints = URI:http://HOSTNAME/crl/distripoint.crl
+		
+		Replace `HOSTNAME` with your hostname on both the lines. The URI will be included in generated certificates and will be used to revoke the certificates.
+
 6. **Preparing the app for running**
 
 	* Migrating the databases using the management script using the command below:
