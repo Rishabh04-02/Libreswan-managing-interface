@@ -107,6 +107,12 @@ Note - These can also be installed in virtualenv and not in whole system.
 		
 		Replace `HOSTNAME` with your hostname on both the lines. The URI will be included in generated certificates and will be used to revoke the certificates.
 
+	* Set the Language & Timezone 	
+	In the file `libreswan_managing_interface/settings.py` set the following options according to your convenience:
+
+			LANGUAGE_CODE = 'en-us'
+			TIME_ZONE = 'Asia/Kolkata'
+
 6. **Preparing the app for running**
 
 	* Migrating the databases using the management script using the command below:
@@ -116,12 +122,12 @@ Note - These can also be installed in virtualenv and not in whole system.
 	* Create an administrative user for the project by typing:
 
 			(librenv) user@host:$	./manage.py createsuperuser
-	This will let you select a username, provide an email address, and choose and confirm a password.
+		This will let you select a username, provide an email address, and choose and confirm a password.
 
 	* Now collecting all of the static content into the directory location:
 		
 			(librenv) user@host:$	./manage.py collectstatic
-	The static files will be placed in a directory called static within the project directory.
+		The static files will be placed in a directory called static within the project directory.
 
 7. **Running the app**
 
@@ -130,9 +136,9 @@ Note - These can also be installed in virtualenv and not in whole system.
 			(librenv) user@host:$	sudo su
 			(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
 
-	Now on your browser navigate to - `http://HOSTNAME:8000/`
-	Your site will be running.
-	Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates.
+		Now on your browser navigate to - `http://HOSTNAME:8000/`
+		Your site will be running.
+		Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates.
 
 	* If you want to create certificates then follow the below instructions:
 	It can be run using the commands below:
@@ -140,9 +146,9 @@ Note - These can also be installed in virtualenv and not in whole system.
 			(librenv) user@host:$	sudo su
 			(librenv) root@host:$	./manage.py runserver 0.0.0.0:8000
 
-	Now on your browser navigate to - `http://HOSTNAME:8000/`
-	Your site will be running.
-	Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates. This issue will be fixed soon.
+		Now on your browser navigate to - `http://HOSTNAME:8000/`
+		Your site will be running.
+		Note - Becoming superuser (`sudo su`) before running server as it needs to write `etc/conf.d/` and will generate secured keys and certificates. This issue will be fixed soon.
 
 8. **Deactivate the environment**
 
