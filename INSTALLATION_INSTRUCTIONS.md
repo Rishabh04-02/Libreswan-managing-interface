@@ -47,7 +47,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 	For that you first need to clone the `Libreswan-managing-interface` from the main repo/fork
 
-		git clone git clone git@github.com:Rishabh04-02/Libreswan-managing-interface.git
+		git clone git@github.com:Rishabh04-02/Libreswan-managing-interface.git
 	OR
 
 		git clone https://github.com/Rishabh04-02/Libreswan-managing-interface.git
