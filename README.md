@@ -26,7 +26,7 @@ Please Refer:
 3. [**Google Summer of Code 2018 - Project Proposal**](https://rishabhchaudhary.in/GSOC_Project_Proposal.pdf)
 
 ## About [The Libreswan Project](https://libreswan.org/)
-Libreswan is a free software implementation of the most widely supported and standarized VPN protocol based on (**"IPsec"**) and the *Internet Key Exchange*(**"IKE"**). These standards are produced and maintained by the Internet Engineering Task Force (**"IETF"**).
+Libreswan is a free software implementation of the most widely supported and standardized VPN protocol based on (**"IPsec"**) and the *Internet Key Exchange*(**"IKE"**). These standards are produced and maintained by the Internet Engineering Task Force (**"IETF"**).
 
 Libreswan has been under active development for over 15 years, going back to The FreeS/WAN Project founded in 1997 by John Gilmore and Hugh Daniel. For more information, see the project's [History](https://libreswan.org/wiki/History). Libreswan supports IKE versions 1 and 2. It runs on Linux 2.4 to 4.x, FreeBSD and Apple OSX. On Linux, it can use the built-in IPsec stack (**"XFRM/NETKEY"**) or its own IPsec stack (**"KLIPS"**). It uses the [NSS](https://libreswan.org/wiki/Using_NSS_with_libreswan) crypto library. The list of supported RFC's can be found at [Implemented standards](https://libreswan.org/wiki/Implemented_Standards).
 
