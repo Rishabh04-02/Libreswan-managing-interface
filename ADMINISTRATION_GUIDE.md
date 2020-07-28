@@ -158,5 +158,15 @@ After that user will receive an email on it's registered email id with the activ
 	http://HOSTNAME/activate/MO/4uj-759a7a1a792880768519/
 
 ### Download the certificate generated for user
-This will let user download the certificate generated for him/her and after successful login user will also be able to see the generated password for his/her certificate.
-For user login - User should enter login credentials on `http://HOSTNAME/` in the user login section.
+* This will let user download the certificate generated for him/her and after successful login user will also be able to see the generated password for his/her certificate.
+* After activating account successfully, the user can login to his/her account.
+* For user login - User should enter login credentials on `http://HOSTNAME/` in the user login section.
+* Once the admin has generated the certificate for the user, the user can see the content similar to the following:
+
+		      		    Hi user,
+		Your certificate password is: 5vw8r34yw706hdyvf650
+		Download your certificate here: Download Certificate.
+
+				Logout | Home Page
+
+![User - Download certificate](https://i.ibb.co/B4rPs25/Screenshot-2020-07-28-Screenshot.png)
