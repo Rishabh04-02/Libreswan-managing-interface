@@ -127,7 +127,7 @@ EMAIL_HOST_PASSWORD = 'mypasswordhere'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# Console baackend
+# Console backend for development purpose only
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Static files (CSS, JavaScript, Images)
