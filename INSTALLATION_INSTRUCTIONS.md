@@ -83,7 +83,11 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 		(librenv) user@host:$	pip3 install mysqlclient
 		
-	while trying to install mysqlclient, you might get error due to pip cache. [Here is how to resolve it](https://github.com/PyMySQL/mysqlclient-python/issues/379).
+	while trying to install mysqlclient, you might get error due to pip cache. You can resolve it using the following command:
+
+		(librenv) user@host:$	pip3 install mysqlclient --no-cache-dir
+	
+	Or you can follow [this thread](https://github.com/PyMySQL/mysqlclient-python/issues/379).
 
 5. **Configuration settings**
 
