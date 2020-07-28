@@ -99,7 +99,8 @@ Note - These can also be installed in virtualenv and not in whole system.
 	* Add host ip to allowed IP's list
 	In the `libreswan_managing_interface/settings.py` add your HOST_NAME to the following line:
 
-		ALLOWED_HOSTS = [192.56.167.123]	#sample host IP
+		ALLOWED_HOSTS = ['192.56.167.123']	# Sample host IP
+		ALLOWED_HOSTS = ['*']	# To allow requests from all IP's
 
 	* Add SMTP credentials
 	To the file `libreswan_managing_interface/settings.py` add the SMTP user credentials to the following lines:
