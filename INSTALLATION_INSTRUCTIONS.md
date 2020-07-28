@@ -79,7 +79,9 @@ Note - These can also be installed in virtualenv and not in whole system.
 
 4. **Install mysqlclient in virtualenv**
 
-	instal using the command below:
+	**Note** - Before trying to install `mysqlclient` make sure you have installed `mysql` in your system.
+	
+	install using the command below:
 
 		(librenv) user@host:$	pip3 install mysqlclient
 		
