@@ -29,21 +29,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 		Output format:	16.0.0
 	virtualenv installed successfully.
 
-2. **Install `pip` in `virtualenv`**
-
-	*Installing on Debian (Wheezy and newer) and Ubuntu (Trusty Tahr and newer) for Python 3.x*
-	Run the following command from a terminal:
-
-		sudo apt-get install python3-pip
-
-	*Installing pip on CentOS 7 for Python 3.x*
-	Assuming you installed Python 3.5 from EPEL, you can install Python 3's setup tools and use it to install pip.
-	Note - First command requires you to have enabled EPEL for CentOS7
-
-		sudo yum install python35-setuptools
-		sudo easy_install pip
-
-3. **Install django 2.0.x**
+2. **Install django 2.0.x**
 
 	For that you first need to clone the `Libreswan-managing-interface` from the main repo/fork
 
@@ -76,6 +62,20 @@ Note - These can also be installed in virtualenv and not in whole system.
 	OR
 		
 		(librenv) user@host:$	python -c "import django; print(django.get_version())"
+
+3. **Install `pip` in `virtualenv`**
+
+	*Installing on Debian (Wheezy and newer) and Ubuntu (Trusty Tahr and newer) for Python 3.x*
+	Run the following command from a terminal:
+
+		sudo apt-get install python3-pip
+
+	*Installing pip on CentOS 7 for Python 3.x*
+	Assuming you installed Python 3.5 from EPEL, you can install Python 3's setup tools and use it to install pip.
+	Note - First command requires you to have enabled EPEL for CentOS7
+
+		sudo yum install python35-setuptools
+		sudo easy_install pip
 
 4. **Install mysqlclient in virtualenv**
 
