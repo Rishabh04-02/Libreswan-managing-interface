@@ -107,6 +107,10 @@ Note - These can also be installed in virtualenv and not in whole system.
 		    EMAIL_HOST = 'smtp.gmail.com'
 		    EMAIL_HOST_USER = 'myemail@gmail.com'
 		    EMAIL_HOST_PASSWORD = 'mypasswordhere'
+		    
+	**Note** - For development purposes you could also use Console backend using the following:
+		   
+		   EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 	* Add HOSTNAME to `config/openssl.cnf`
 	In this file on line `87` & `103` find the below mentioned content:
