@@ -23,7 +23,7 @@ Managing Interface for Libreswan VPN software, built using [django](https://gith
 Please Refer:
 1. [**Installation Instructions**](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/INSTALLATION_INSTRUCTIONS.md) - A step by step guide on Installation of Libreswan Managing Interface.
 2. [**Libreswan Administration guide**](https://github.com/Rishabh04-02/Libreswan-managing-interface/blob/master/ADMINISTRATION_GUIDE.md) - A guide on how to use different functionalities of the Libreswan Managing Interface.
-3. [**Google Summer of Code 2018 - Project Proposal**](https://therishabh.in/Libreswan_Managing_Interface_Project_Proposal-Rishabh.pdf) - W​ eb based Certificate and Profile User Interface.
+3. [**Google Summer of Code 2018 - Project Proposal**](https://therishabh.in/Libreswan_Managing_Interface_Project_Proposal-Rishabh.pdf) - Web based Certificate and Profile User Interface.
 
 ## About [The Libreswan Project](https://libreswan.org/)
 Libreswan is a free software implementation of the most widely supported and standardized VPN protocol based on (**"IPsec"**) and the *Internet Key Exchange*(**"IKE"**). These standards are produced and maintained by the Internet Engineering Task Force (**"IETF"**).
