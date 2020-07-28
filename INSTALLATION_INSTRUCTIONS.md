@@ -108,7 +108,7 @@ Note - These can also be installed in virtualenv and not in whole system.
 		    EMAIL_HOST_USER = 'myemail@gmail.com'
 		    EMAIL_HOST_PASSWORD = 'mypasswordhere'
 		    
-	**Note** - For development purposes you could also use Console backend using the following:
+	* **Note** - For development purposes you could also use Console backend using the following:
 		   
 		   EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
